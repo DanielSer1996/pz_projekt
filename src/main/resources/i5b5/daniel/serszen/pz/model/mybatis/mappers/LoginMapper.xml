@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="i5b5.daniel.serszen.pz.model.mybatis.mappers.LoginMapper">
+
+    <select id="getEncryptedPassByLogin" resultType="java.lang.String">
+        SELECT STORED_PASSWORD
+        FROM USERS
+        WHERE LOGIN = #{login}
+    </select>
+
+    <insert id="insertAdminUser">
+        INSERT INTO USERS
+        VALUES (#{login}, #{password})
+    </insert>
+
+</mapper>

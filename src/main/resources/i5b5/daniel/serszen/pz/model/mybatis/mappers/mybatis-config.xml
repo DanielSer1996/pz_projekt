@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <properties resource="i5b5/daniel/serszen/pz/properties/mybatis.properties"/>
+
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="jdbcTypeForNull" value="NULL"/>
+    </settings>
+
+    <typeAliases>
+
+    </typeAliases>
+
+    <typeHandlers>
+        <typeHandler javaType="java.util.Calendar"
+                     handler="i5b5.daniel.serszen.pz.model.mybatis.typehandlers.DateCalendarTypeHandler"/>
+    </typeHandlers>
+
+    <environments default="pz_db">
+        <environment id="pz_db">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${mybatis.driver}"/>
+                <property name="url" value="${mybatis.url}"/>
+                <property name="username" value="${mybatis.username}"/>
+                <property name="password" value="${mybatis.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <package name="i5b5.daniel.serszen.pz.model.mybatis.mappers"/>
+    </mappers>
+
+</configuration>
