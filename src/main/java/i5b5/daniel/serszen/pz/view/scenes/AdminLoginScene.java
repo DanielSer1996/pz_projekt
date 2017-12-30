@@ -1,17 +1,25 @@
 package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.controller.UtilController;
-import i5b5.daniel.serszen.pz.model.exceptions.UserNotFoundException;
+import i5b5.daniel.serszen.pz.model.exceptions.LoginException;
+import i5b5.daniel.serszen.pz.model.exceptions.ResourceException;
 import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
 import i5b5.daniel.serszen.pz.view.App;
+import i5b5.daniel.serszen.pz.view.events.CustomEventHandler;
+import i5b5.daniel.serszen.pz.view.events.LoginSuccessfulEvent;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import javafx.scene.text.TextBoundsType;
 
 
 public class AdminLoginScene extends Scene {
@@ -27,6 +35,22 @@ public class AdminLoginScene extends Scene {
         Text loginText = new Text("Login");
 
         Text passwordText = new Text("Hasło");
+
+        Circle circle = new Circle(12);
+        circle.setStyle("-fx-fill: #9CBE83;" +
+                "-fx-text-fill: black");
+
+        Text questionMark = new Text("?");
+        questionMark.setStyle("-fx-font: normal bold 12px 'serif'");
+        questionMark.setBoundsType(TextBoundsType.VISUAL);
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().add(circle);
+        stackPane.getChildren().add(questionMark);
+
+        circle.setOnMouseEntered(event -> {
+            Tooltip tooltip = new Tooltip("Wielkość liter nie ma znaczenia");
+            Tooltip.install(circle,tooltip);
+        });
 
         TextField loginTextField = new TextField();
 
@@ -47,8 +71,18 @@ public class AdminLoginScene extends Scene {
 
         gridPane.setAlignment(Pos.CENTER);
 
+        passwordField.setOnKeyPressed(event -> {
+            if(KeyCode.ENTER.equals(event.getCode()))
+                loginButton.fire();
+        });
+
+        loginTextField.setOnKeyPressed(event -> {
+            if(KeyCode.ENTER.equals(event.getCode()))
+                loginButton.fire();
+        });
+
         loginButton.setOnAction(event -> {
-            loginButtonFire(loginTextField.getText(),passwordField.getText());
+            loginButtonFire(loginTextField.getText().toLowerCase(),passwordField.getText(),loginButton);
         });
 
         clearButton.setOnAction(event -> {
@@ -62,11 +96,20 @@ public class AdminLoginScene extends Scene {
 
         gridPane.add(loginText, 0, 0);
         gridPane.add(loginTextField, 1, 0);
+        gridPane.add(stackPane,2,0);
         gridPane.add(passwordText, 0, 1);
         gridPane.add(passwordField, 1, 1);
         gridPane.add(loginButton, 0, 2);
         gridPane.add(clearButton, 1, 2);
-        gridPane.add(backButton, 0, 3);
+        gridPane.add(backButton, 0, 6);
+
+        gridPane.addEventHandler(LoginSuccessfulEvent.LOGIN_SUCCESSFUL_BASE,
+                new CustomEventHandler() {
+                    @Override
+                    public void onLoginSuccessful() {
+                        App.changeScene(AdminPanelScene.getAdminPanelScene(500,500,loginText.getText()));
+                    }
+                });
 
         loginButton.setStyle("-fx-background-color: #ffcc66; -fx-text-fill: black;");
         clearButton.setStyle("-fx-background-color: #ffcc66; -fx-text-fill: black;");
@@ -88,7 +131,7 @@ public class AdminLoginScene extends Scene {
         }
     }
 
-    private static void loginButtonFire(String login, String password){
+    private static void loginButtonFire(String login, String password, Button source){
         try {
             boolean credentialsCheck = adminLoginScene.getUtilController().checkLoginData(login, password);
             if (!credentialsCheck) {
@@ -96,20 +139,12 @@ public class AdminLoginScene extends Scene {
                         "Nieprawidłowe hasło",
                         ButtonType.OK);
                 alert.showAndWait();
+            }else {
+                source.fireEvent(new LoginSuccessfulEvent(LoginSuccessfulEvent.LOGIN_SUCCESSFUL_BASE));
             }
-        } catch (UserNotFoundException e) {
+        } catch (LoginException | ResourceException e){
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Admin o podanym loginie nie istnieje",
-                    ButtonType.OK);
-            alert.showAndWait();
-        } catch (IllegalArgumentException e){
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Hasło nie może być puste",
-                    ButtonType.OK);
-            alert.showAndWait();
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Błąd podczas sprawdzania danych logowania",
+                    e.getMessage(),
                     ButtonType.OK);
             alert.showAndWait();
         }

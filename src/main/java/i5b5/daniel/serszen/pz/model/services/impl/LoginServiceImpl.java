@@ -1,6 +1,7 @@
 package i5b5.daniel.serszen.pz.model.services.impl;
 
-import i5b5.daniel.serszen.pz.model.exceptions.UserNotFoundException;
+import i5b5.daniel.serszen.pz.model.exceptions.LoginException;
+import i5b5.daniel.serszen.pz.model.exceptions.codes.LoginExceptionCodes;
 import i5b5.daniel.serszen.pz.model.mybatis.mappers.LoginMapper;
 import i5b5.daniel.serszen.pz.model.services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,11 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+
 import org.apache.commons.codec.binary.Base64;
 
 @Service
@@ -23,13 +28,13 @@ public class LoginServiceImpl implements LoginService {
     private LoginMapper loginMapper;
 
     @Override
-    public boolean checkLoginData(String login, String password) throws Exception {
+    public boolean checkLoginData(String login, String password) throws LoginException, GeneralSecurityException {
         if(login == null || password == null){
             throw new IllegalArgumentException("Login or password is null");
         }
         String storedPass = loginMapper.getEncryptedPassByLogin(login);
         if(storedPass == null){
-            throw new UserNotFoundException("User doesn't exists");
+            throw new LoginException("Nie znaleziono admina o podanym loginie",LoginExceptionCodes.USER_NOT_FOUND);
         }
         return check(password,storedPass);
     }
@@ -40,12 +45,12 @@ public class LoginServiceImpl implements LoginService {
         loginMapper.insertAdminUser(login,encPassword);
     }
 
-    private String getSaltedHash(String password) throws Exception {
+    private String getSaltedHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLen);
         return Base64.encodeBase64String(salt) + "$" + hash(password, salt);
     }
 
-    private String hash(String password, byte[] salt) throws Exception {
+    private String hash(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         if (password == null || password.length() == 0)
             throw new IllegalArgumentException("Empty passwords are not supported.");
         SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
@@ -55,7 +60,7 @@ public class LoginServiceImpl implements LoginService {
         return Base64.encodeBase64String(key.getEncoded());
     }
 
-    private boolean check(String password, String stored) throws Exception{
+    private boolean check(String password, String stored) throws InvalidKeySpecException, NoSuchAlgorithmException {
         String[] saltAndPass = stored.split("\\$");
         if (saltAndPass.length != 2) {
             throw new IllegalStateException(

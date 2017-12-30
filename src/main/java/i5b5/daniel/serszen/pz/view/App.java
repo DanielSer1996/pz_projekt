@@ -3,7 +3,6 @@ package i5b5.daniel.serszen.pz.view;
 import i5b5.daniel.serszen.pz.view.scenes.StartingScene;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -18,7 +17,7 @@ public class App  extends Application{
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         stage = primaryStage;
         primaryStage.setTitle("Katalog części");
 
