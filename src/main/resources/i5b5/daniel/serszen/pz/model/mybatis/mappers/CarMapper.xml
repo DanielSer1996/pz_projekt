@@ -5,6 +5,7 @@
 <mapper namespace="i5b5.daniel.serszen.pz.model.mybatis.mappers.CarMapper">
 
     <resultMap id="carMap" type="i5b5.daniel.serszen.pz.model.mybatis.dto.Car">
+        <result column="CAR_ID" property="id"/>
         <result column="CAR_BRAND" property="brand"/>
         <result column="CAR_MODEL" property="model"/>
         <result column="CAR_PRODUCTION_START_DATE" property="productionStart" typeHandler="i5b5.daniel.serszen.pz.model.mybatis.typehandlers.DateCalendarTypeHandler"/>
@@ -13,12 +14,20 @@
 
 
     <select id="getCarsByBrand" resultMap="carMap">
+        <include refid="basicCarSelect"/>
+        WHERE CAR_BRAND = #{brand}
+    </select>
+    <select id="getAllCars" resultMap="carMap">
+        <include refid="basicCarSelect"/>
+    </select>
+
+    <sql id="basicCarSelect">
         SELECT
+            CAR_ID,
             CAR_BRAND,
             CAR_MODEL,
             CAR_PRODUCTION_START_DATE,
             CAR_PRODUCTION_END_DATE
         FROM CAR_DICT
-        WHERE CAR_BRAND = #{brand}
-    </select>
+    </sql>
 </mapper>

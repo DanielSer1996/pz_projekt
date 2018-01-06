@@ -6,38 +6,36 @@ import org.apache.ibatis.type.TypeHandler;
 import java.sql.*;
 import java.util.Calendar;
 
-public class DateCalendarTypeHandler implements TypeHandler<Calendar>{
+public class DateCalendarTypeHandler implements TypeHandler<String>{
     @Override
-    public void setParameter(PreparedStatement ps, int i, Calendar parameter, JdbcType jdbcType) throws SQLException {
+    public void setParameter(PreparedStatement ps, int i, String parameter, JdbcType jdbcType) throws SQLException {
         if(parameter == null){
             ps.setNull(i, Types.TIMESTAMP);
         }else{
-            ps.setTimestamp(i, new Timestamp(parameter.getTime().getTime()));
+            ps.setString(i, "");
         }
     }
 
     @Override
-    public Calendar getResult(ResultSet rs, String columnName) throws SQLException {
+    public String getResult(ResultSet rs, String columnName) throws SQLException {
         return mapToCalendar(rs.getTimestamp(columnName));
     }
 
     @Override
-    public Calendar getResult(ResultSet rs, int columnIndex) throws SQLException {
+    public String getResult(ResultSet rs, int columnIndex) throws SQLException {
         return mapToCalendar(rs.getTimestamp(columnIndex));
     }
 
     @Override
-    public Calendar getResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public String getResult(CallableStatement cs, int columnIndex) throws SQLException {
         return mapToCalendar(cs.getTimestamp(columnIndex));
     }
 
-    private Calendar mapToCalendar(Timestamp date) {
+    private String mapToCalendar(Timestamp date) {
         if(date == null){
             return null;
         }else{
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            return calendar;
+            return date.toString().replaceAll(" (\\d{2}:?){3}.\\d","");
         }
     }
 }

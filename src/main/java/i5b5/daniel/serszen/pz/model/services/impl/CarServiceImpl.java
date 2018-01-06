@@ -23,6 +23,11 @@ public class CarServiceImpl implements CarService{
         return carMapper.getCarsByBrand(brand);
     }
 
+    @Override
+    public List<Car> getAllCars() {
+        return carMapper.getAllCars();
+    }
+
     public CarMapper getCarMapper() {
         return carMapper;
     }

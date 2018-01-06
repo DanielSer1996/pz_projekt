@@ -11,4 +11,5 @@ import java.util.List;
 @Component
 public interface CarMapper {
     List<Car> getCarsByBrand(@Param("brand") String brand);
+    List<Car> getAllCars();
 }

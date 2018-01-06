@@ -1,64 +1,106 @@
 package i5b5.daniel.serszen.pz.view.scenes;
 
-import i5b5.daniel.serszen.pz.view.App;
+import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
-public class StartingScene extends Scene {
-    private static StartingScene startingScene = null;
+public class StartingScene extends AbstractCustomScene {
+    private Text startingSceneLabel;
+    private Button adminButton;
+    private Button observerButton;
+    private ViewDelegate viewDelegate;
 
 
-    private StartingScene(Parent root, double width, double height) {
-        super(root, width, height);
+    public StartingScene(){
+        this(new Pane());
     }
 
-    private static void init(double width, double height) {
-        Pane root = new Pane();
+    public StartingScene(Parent root) {
+        super(root);
+        viewDelegate = ViewDelegate.getInstance();
+        init();
+    }
 
-        root.setStyle("-fx-background-color: #436994;");
+    private void init() {
+        this.widthDim = 200;
+        this.heightDim = 200;
 
-        Text startingSceneLabel = new Text("Wybierz co chcesz zrobić");
-        startingSceneLabel.setX(15);
-        startingSceneLabel.setY(20);
-        startingSceneLabel.setStyle("-fx-font: normal bold 12px 'serif';");
+        this.startingSceneLabel = new Text("Wybierz co chcesz zrobić");
+        this.startingSceneLabel.setStyle("-fx-font: normal bold 12px 'serif';");
 
-        Button adminButton = new Button("Zaloguj jako admin");
-        adminButton.setWrapText(true);
-        adminButton.setMaxWidth(100);
-        adminButton.setLayoutX(width / 2 - 50);
-        adminButton.setLayoutY(height / 2 - 50);
-        adminButton.setStyle("-fx-background-color: #ffcc66; " +
+        this.adminButton = new Button("Zaloguj jako admin");
+        this.adminButton.setTooltip(new Tooltip("Umożliwia zarządzanie katalogiem"));
+        this.adminButton.setWrapText(true);
+        this.adminButton.setStyle("-fx-background-color: #ffcc66; " +
                 "-fx-text-fill: black;" +
                 "-fx-font: normal bold 10px 'serif'");
-        adminButton.setOnAction(event -> {
-            App.changeScene(AdminLoginScene.getAdminLoginScene(400,400));
+        this.adminButton.setOnAction(event -> {
+            viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminLoginScene.class.getSimpleName()),null);
         });
 
-        Button observerButton = new Button("Przeglądaj katalog");
-        observerButton.setWrapText(true);
-        observerButton.setMaxWidth(100);
-        observerButton.setLayoutX(width / 2 - 50);
-        observerButton.setLayoutY(height / 2);
-        observerButton.setStyle("-fx-background-color: #ffcc66; " +
+        this.observerButton = new Button("Przeglądaj katalog");
+        this.observerButton.setTooltip(new Tooltip("Pozwala na przeglądanie katalogu bez możliwości dokonywania zmian, niewymagane logowanie"));
+        this.observerButton.setWrapText(true);
+        this.observerButton.setStyle("-fx-background-color: #ffcc66; " +
                 "-fx-text-fill: black;" +
                 "-fx-font: normal bold 10px 'serif'");
 
-        root.getChildren().add(startingSceneLabel);
-        root.getChildren().add(adminButton);
-        root.getChildren().add(observerButton);
 
-        startingScene = new StartingScene(root, width, height);
+
+        this.setRoot(initRootPane());
     }
 
-    public static StartingScene getStartingScene(double width, double height) {
-        if (startingScene != null) {
-            return startingScene;
-        } else {
-            init(width, height);
-            return startingScene;
-        }
+    @Override
+    protected Parent initRootPane() {
+        GridPane root = new GridPane();
+        root.setPadding(new Insets(10, 10, 10, 10));
+
+        root.setVgap(15);
+        root.setHgap(5);
+
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #436994;");
+
+        root.add(startingSceneLabel,0,0);
+        root.add(adminButton,0,3);
+        root.add(observerButton,0,4);
+
+        return root;
+    }
+
+
+    public Text getStartingSceneLabel() {
+        return startingSceneLabel;
+    }
+
+    public Button getAdminButton() {
+        return adminButton;
+    }
+
+    public Button getObserverButton() {
+        return observerButton;
+    }
+
+    public double getWidthDim() {
+        return widthDim;
+    }
+
+    public void setWidthDim(double widthDim) {
+        this.widthDim = widthDim;
+    }
+
+    public double getHeightDim() {
+        return heightDim;
+    }
+
+    public void setHeightDim(double heightDim) {
+        this.heightDim = heightDim;
     }
 }

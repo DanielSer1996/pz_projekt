@@ -18,14 +18,12 @@ public class CarController {
 
 
     public List<Car> getCarListByBrand(String brand){
-        List<Car> cars = carService.getCarsByBrand(brand);
-        for(Car car : cars){
-            System.out.println(car.getBrand()+ " " + car.getModel());
-            System.out.print("Produced from: " + car.getProductionStart().getTime().toString());
-            System.out.println(" to: " + car.getProductionEnd().getTime().toString());
-        }
 
-        return cars;
+        return carService.getCarsByBrand(brand);
+    }
+
+    public List<Car> getAllCars(){
+        return carService.getAllCars();
     }
 
     public CarService getCarService() {
