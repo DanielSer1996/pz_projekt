@@ -20,6 +20,26 @@
     <select id="getAllCars" resultMap="carMap">
         <include refid="basicCarSelect"/>
     </select>
+    <select id="getCarsByModel" resultMap="carMap">
+        <include refid="basicCarSelect"/>
+        WHERE CAR_MODEL = #{model}
+    </select>
+
+    <delete id="deleteCarsByBrand">
+        DELETE FROM CAR_DICT
+        WHERE CAR_BRAND = #{brand}
+    </delete>
+    <delete id="deleteCarsByBrandAndModel">
+        DELETE FROM CAR_DICT
+        WHERE CAR_MODEL = #{model}
+    </delete>
+    <delete id="deleteCarsByBrandModelAndProductionDate">
+        DELETE FROM CAR_DICT
+        WHERE CAR_BRAND = #{brand}
+        AND CAR_MODEL = #{model}
+        AND TO_CHAR(CAR_PRODUCTION_START_DATE,'YYYY-MM-DD') = #{productionStartDate}
+        AND TO_CHAR(CAR_PRODUCTION_END_DATE,'YYYY-MM-DD') = #{productionEndDate}
+    </delete>
 
     <sql id="basicCarSelect">
         SELECT

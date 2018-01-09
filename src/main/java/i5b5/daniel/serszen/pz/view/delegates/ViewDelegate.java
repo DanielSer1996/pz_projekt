@@ -1,6 +1,5 @@
 package i5b5.daniel.serszen.pz.view.delegates;
 
-import i5b5.daniel.serszen.pz.view.App;
 import i5b5.daniel.serszen.pz.view.scenes.AbstractCatalogScene;
 import i5b5.daniel.serszen.pz.view.scenes.AbstractCustomScene;
 import javafx.stage.Stage;

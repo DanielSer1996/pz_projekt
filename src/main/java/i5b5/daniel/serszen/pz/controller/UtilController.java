@@ -7,6 +7,7 @@ import i5b5.daniel.serszen.pz.model.exceptions.codes.ResourceExceptionCodes;
 import i5b5.daniel.serszen.pz.model.services.LoginService;
 import org.apache.ibatis.exceptions.IbatisException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.security.GeneralSecurityException;

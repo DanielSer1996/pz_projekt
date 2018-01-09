@@ -8,5 +8,13 @@ import java.util.List;
 
 public interface CarService {
     List<Car> getCarsByBrand(String brand);
+    List<Car> getCarsByModel(String model);
     List<Car> getAllCars();
+
+    void deleteCarsByBrand(String brand);
+    void deleteCarsByBrandAndModel(String brand, String model);
+    void deleteCarsByBrandModelAndProductionDate(String brand,
+                                                 String model,
+                                                 String productionStartDate,
+                                                 String productionEndDate);
 }

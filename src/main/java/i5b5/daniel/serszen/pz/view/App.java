@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+
 public class App  extends Application{
 
     private static final double SCREEN_WIDTH = Screen.getScreens().get(0).getBounds().getWidth();

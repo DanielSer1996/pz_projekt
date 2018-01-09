@@ -10,13 +10,13 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import org.springframework.beans.factory.annotation.Value;
 
 public class StartingScene extends AbstractCustomScene {
     private Text startingSceneLabel;
     private Button adminButton;
     private Button observerButton;
     private ViewDelegate viewDelegate;
-
 
     public StartingScene(){
         this(new Pane());
@@ -52,8 +52,6 @@ public class StartingScene extends AbstractCustomScene {
                 "-fx-text-fill: black;" +
                 "-fx-font: normal bold 10px 'serif'");
 
-
-
         this.setRoot(initRootPane());
     }
 
@@ -86,21 +84,5 @@ public class StartingScene extends AbstractCustomScene {
 
     public Button getObserverButton() {
         return observerButton;
-    }
-
-    public double getWidthDim() {
-        return widthDim;
-    }
-
-    public void setWidthDim(double widthDim) {
-        this.widthDim = widthDim;
-    }
-
-    public double getHeightDim() {
-        return heightDim;
-    }
-
-    public void setHeightDim(double heightDim) {
-        this.heightDim = heightDim;
     }
 }

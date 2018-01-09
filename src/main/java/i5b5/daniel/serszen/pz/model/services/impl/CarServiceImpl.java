@@ -24,8 +24,28 @@ public class CarServiceImpl implements CarService{
     }
 
     @Override
+    public List<Car> getCarsByModel(String model) {
+        return carMapper.getCarsByModel(model);
+    }
+
+    @Override
     public List<Car> getAllCars() {
         return carMapper.getAllCars();
+    }
+
+    @Override
+    public void deleteCarsByBrand(String brand) {
+        carMapper.deleteCarsByBrand(brand);
+    }
+
+    @Override
+    public void deleteCarsByBrandAndModel(String brand, String model) {
+        carMapper.deleteCarsByBrandAndModel(brand,model);
+    }
+
+    @Override
+    public void deleteCarsByBrandModelAndProductionDate(String brand, String model, String productionStartDate, String productionEndDate) {
+        carMapper.deleteCarsByBrandModelAndProductionDate(brand, model, productionStartDate, productionEndDate);
     }
 
     public CarMapper getCarMapper() {

@@ -11,5 +11,13 @@ import java.util.List;
 @Component
 public interface CarMapper {
     List<Car> getCarsByBrand(@Param("brand") String brand);
+    List<Car> getCarsByModel(@Param("model") String model);
     List<Car> getAllCars();
+
+    void deleteCarsByBrand(@Param("brand") String brand);
+    void deleteCarsByBrandAndModel(@Param("brand")String brand ,@Param("model")String model);
+    void deleteCarsByBrandModelAndProductionDate(@Param("brand")String brand,
+                                                 @Param("model")String model,
+                                                 @Param("productionStartDate")String productionStartDate,
+                                                 @Param("productionEndDate")String productionEndDate);
 }

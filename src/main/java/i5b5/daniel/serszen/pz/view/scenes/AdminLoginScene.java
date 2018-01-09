@@ -2,10 +2,13 @@ package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.controller.UtilController;
 import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
+import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
 import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
 import i5b5.daniel.serszen.pz.view.events.CustomEventHandler;
 import i5b5.daniel.serszen.pz.view.events.LoginSuccessfulEvent;
 import javafx.concurrent.Task;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -139,11 +142,13 @@ public class AdminLoginScene extends AbstractCustomScene {
         gridPane.add(clearButton, 1, 2);
         gridPane.add(backButton, 0, 6);
 
+
         gridPane.addEventHandler(LoginSuccessfulEvent.LOGIN_SUCCESSFUL_BASE,
-                new CustomEventHandler() {
+                new EventHandler<Event>() {
                     @Override
-                    public void onLoginSuccessful(String login) {
-                        viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogScene.class.getSimpleName()),login);
+                    public void handle(Event event) {
+                        viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogScene.class.getSimpleName()),
+                                loginTextField.getText());
                     }
                 });
 
