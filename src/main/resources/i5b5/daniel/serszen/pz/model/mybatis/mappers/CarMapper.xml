@@ -10,7 +10,23 @@
         <result column="CAR_MODEL" property="model"/>
         <result column="CAR_PRODUCTION_START_DATE" property="productionStart" typeHandler="i5b5.daniel.serszen.pz.model.mybatis.typehandlers.DateCalendarTypeHandler"/>
         <result column="CAR_PRODUCTION_END_DATE" property="productionEnd" typeHandler="i5b5.daniel.serszen.pz.model.mybatis.typehandlers.DateCalendarTypeHandler"/>
+        <result column="CAR_IMAGE_URI" property="imgUri"/>
     </resultMap>
+
+    <insert id="insertCar">
+        <selectKey keyProperty="id" resultType="java.lang.Long" order="BEFORE">
+            SELECT car_seq.nextval as id
+            from dual
+        </selectKey>
+        INSERT INTO CAR_DICT
+        VALUES (#{id},
+                #{car.brand},
+                #{car.model},
+                TO_DATE(#{car.productionStart},'YYYY-MM-DD'),
+                TO_DATE(#{car.productionEnd},'YYYY-MM-DD'),
+                #{car.imgUri})
+
+    </insert>
 
 
     <select id="getCarsByBrand" resultMap="carMap">
@@ -47,7 +63,8 @@
             CAR_BRAND,
             CAR_MODEL,
             CAR_PRODUCTION_START_DATE,
-            CAR_PRODUCTION_END_DATE
+            CAR_PRODUCTION_END_DATE,
+            CAR_IMAGE_URI
         FROM CAR_DICT
     </sql>
 </mapper>

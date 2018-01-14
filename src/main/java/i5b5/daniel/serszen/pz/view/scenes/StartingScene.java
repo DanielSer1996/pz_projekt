@@ -4,19 +4,18 @@ import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import org.springframework.beans.factory.annotation.Value;
 
 public class StartingScene extends AbstractCustomScene {
     private Text startingSceneLabel;
     private Button adminButton;
     private Button observerButton;
     private ViewDelegate viewDelegate;
+
 
     public StartingScene(){
         this(new Pane());

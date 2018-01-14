@@ -2,6 +2,8 @@ package i5b5.daniel.serszen.pz.view.delegates;
 
 import i5b5.daniel.serszen.pz.view.scenes.AbstractCatalogScene;
 import i5b5.daniel.serszen.pz.view.scenes.AbstractCustomScene;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
@@ -10,7 +12,7 @@ import java.util.Map;
 public class ViewDelegate {
     private static ViewDelegate viewDelegate;
 
-    private Map<String,AbstractCustomScene> scenes = new HashMap<>();
+    private Map<String, AbstractCustomScene> scenes = new HashMap<>();
     private final String SCENES_PACKAGE = "i5b5.daniel.serszen.pz.view.scenes.";
     private final Stage stage;
 
@@ -18,27 +20,27 @@ public class ViewDelegate {
         this.stage = stage;
     }
 
-    public void changeScene(AbstractCustomScene scene, String login){
-        if(scene instanceof AbstractCatalogScene && login != null){
+    public void changeScene(AbstractCustomScene scene, String login) {
+        if (scene instanceof AbstractCatalogScene && login != null) {
             AbstractCatalogScene scene1 = (AbstractCatalogScene) scene;
-            scene1.getUserName().setValue(login);
-            scene1.isAdminScene().setValue(true);
+            scene1.getLoggedUser().setText("Zalogowany admin: " + login);
+            scene1.setAdminScene(new SimpleBooleanProperty(true));
             stage.setScene(scene1);
-        }else {
+        } else {
             stage.setScene(scene);
         }
         stage.setWidth(scene.getWidthDim());
         stage.setHeight(scene.getHeightDim());
     }
 
-    public AbstractCustomScene chooseSceneByName(String name){
-        if(scenes.containsKey(name)){
+    public AbstractCustomScene chooseSceneByName(String name) {
+        if (scenes.containsKey(name)) {
             return scenes.get(name);
-        }else {
+        } else {
             try {
-                Class clazz =  Class.forName(SCENES_PACKAGE+name);
+                Class clazz = Class.forName(SCENES_PACKAGE + name);
                 AbstractCustomScene scene = (AbstractCustomScene) clazz.newInstance();
-                scenes.put(name,scene);
+                scenes.put(name, scene);
                 return scene;
             } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
@@ -51,21 +53,21 @@ public class ViewDelegate {
         return scenes;
     }
 
-     public static ViewDelegate getInstance(Stage stage){
-        if(viewDelegate == null){
+    public static ViewDelegate getInstance(Stage stage) {
+        if (viewDelegate == null) {
             viewDelegate = new ViewDelegate(stage);
             return viewDelegate;
-        }else {
+        } else {
             return viewDelegate;
         }
-     }
+    }
 
-     public static ViewDelegate getInstance(){
-        if(viewDelegate == null){
+    public static ViewDelegate getInstance() {
+        if (viewDelegate == null) {
             throw new NullPointerException("You have to instantiate ViewDelegate with javafx Stage parameter");
         }
         return viewDelegate;
-     }
+    }
 
     public Stage getStage() {
         return stage;

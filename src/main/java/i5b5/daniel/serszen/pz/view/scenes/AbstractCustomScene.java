@@ -2,6 +2,7 @@ package i5b5.daniel.serszen.pz.view.scenes;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuBar;
 
 public abstract class AbstractCustomScene extends Scene{
     protected double widthDim;
@@ -28,4 +29,6 @@ public abstract class AbstractCustomScene extends Scene{
     public void setHeightDim(double heightDim) {
         this.heightDim = heightDim;
     }
+
+
 }

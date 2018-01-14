@@ -4,11 +4,11 @@ import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
 import javafx.event.Event;
 import javafx.event.EventType;
 
-public class CarChosenEvent extends Event{
-    public static EventType<CarChosenEvent> CAR_CHOSEN_BASE = new EventType<>("CAR_CHOSEN_BASE");
+public class CarAddedEvent extends Event{
+    public static final EventType<CarAddedEvent> CAR_ADDED_EVENT_TYPE = new EventType<>("CAR_ADDED_EVENT_TYPE");
     private Car car;
 
-    public CarChosenEvent(EventType<? extends Event> eventType, Car car){
+    public CarAddedEvent(EventType<? extends Event> eventType, Car car) {
         super(eventType);
         this.car = car;
     }

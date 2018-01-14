@@ -20,4 +20,6 @@ public interface CarMapper {
                                                  @Param("model")String model,
                                                  @Param("productionStartDate")String productionStartDate,
                                                  @Param("productionEndDate")String productionEndDate);
+
+    void insertCar(@Param("car") Car car);
 }

@@ -1,5 +1,6 @@
 package i5b5.daniel.serszen.pz.model.services;
 
+import i5b5.daniel.serszen.pz.model.exceptions.DataIncorrectException;
 import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
 import org.springframework.stereotype.Service;
 
@@ -17,4 +18,5 @@ public interface CarService {
                                                  String model,
                                                  String productionStartDate,
                                                  String productionEndDate);
+    void insertCar(Car car) throws DataIncorrectException;
 }

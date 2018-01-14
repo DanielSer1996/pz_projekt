@@ -1,0 +1,103 @@
+
+
+.root{
+    -fx-font-family: "Calibri";
+    -fx-base: #99ff99;
+    -fx-background-color: #4dff4d ;
+
+}
+
+.menu-bar{
+
+    -fx-background-color: #ffff00;
+    -fx-border-color: #cc3300;
+
+}
+
+.button{
+    -fx-text-fill: #000099;
+    -fx-border-color: #009933;
+    -fx-border-radius: 5;
+    -fx-padding: 3 6 6 6;
+}
+
+
+
+.text-field{
+
+
+    -fx-border-color: #003300;
+
+
+}
+
+#title{
+    -fx-font-family: BOLD;
+    -fx-font-size: 15;
+    -fx-text-fill: black;
+}
+
+#logged{
+    -fx-font-family: BOLD;
+    -fx-font-size: 15;
+    -fx-text-fill: red;
+}
+
+
+.table-view .column-header-background{
+    -fx-background-color: linear-gradient(#99ccff 20%, #0066cc 80%);
+}
+
+.table-view .column-header-background .label{
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+
+.table-view .table-cell{
+    -fx-text-fill: black;
+}
+
+.table-row-cell{
+    -fx-background-color: -fx-table-cell-border-color, #66ccff;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em; /* 0 */
+}
+
+.table-row-cell:empty {
+    -fx-background-color: white;
+    -fx-fill: white;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
+
+.table-row-cell:odd{
+    -fx-background-color: -fx-table-cell-border-color, #b3e6ff;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0.0em;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #005797;
+    -fx-background-insets: 0;
+    -fx-background-radius: 1;
+}
+
+.table-view > .virtual-flow > .scroll-bar:vertical,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track,
+.table-view > .virtual-flow > .scroll-bar:vertical > .track-background,
+.table-view > .virtual-flow > .scroll-bar:horizontal,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track,
+.table-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
+    -fx-background-color: transparent;
+}
+
+.table-view > .virtual-flow > .scroll-bar > .increment-button,
+.table-view > .virtual-flow > .scroll-bar > .decrement-button {
+    -fx-opacity: 0;
+}*

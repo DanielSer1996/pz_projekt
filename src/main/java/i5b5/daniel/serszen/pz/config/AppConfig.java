@@ -8,14 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import java.io.InputStream;
 
 @Configuration
 @ComponentScan("i5b5.daniel.serszen.pz")
-@EnableSpringConfigured
 @MapperScan("i5b5.daniel.serszen.pz.model.mybatis.mappers")
 @PropertySource("file:properties/app.properties")
 public class AppConfig {

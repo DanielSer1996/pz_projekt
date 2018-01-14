@@ -1,5 +1,7 @@
 package i5b5.daniel.serszen.pz.model.services.impl;
 
+import i5b5.daniel.serszen.pz.model.exceptions.DataIncorrectException;
+import i5b5.daniel.serszen.pz.model.exceptions.codes.DataIncorrectExceptionCodes;
 import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
 import i5b5.daniel.serszen.pz.model.mybatis.mappers.CarMapper;
 import i5b5.daniel.serszen.pz.model.services.CarService;
@@ -11,9 +13,9 @@ import java.util.List;
 @Service
 public class CarServiceImpl implements CarService{
 
-    @Autowired
     private final CarMapper carMapper;
 
+    @Autowired
     public CarServiceImpl(CarMapper carMapper) {
         this.carMapper = carMapper;
     }
@@ -47,6 +49,21 @@ public class CarServiceImpl implements CarService{
     public void deleteCarsByBrandModelAndProductionDate(String brand, String model, String productionStartDate, String productionEndDate) {
         carMapper.deleteCarsByBrandModelAndProductionDate(brand, model, productionStartDate, productionEndDate);
     }
+
+    @Override
+    public void insertCar(Car car) throws DataIncorrectException {
+        validateDateFormat(car);
+        carMapper.insertCar(car);
+    }
+
+    private void validateDateFormat(Car car) throws DataIncorrectException {
+        if(!car.getProductionStart().matches("\\d{4}-\\d{2}-\\d{2}")
+                && !car.getProductionEnd().matches("\\d{4}-\\d{2}-\\d{2}")){
+            throw new DataIncorrectException("Date format incorrect", DataIncorrectExceptionCodes.CAR_DATA_INCORRECT);
+
+        }
+    }
+
 
     public CarMapper getCarMapper() {
         return carMapper;

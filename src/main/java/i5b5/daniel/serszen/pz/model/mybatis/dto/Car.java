@@ -6,6 +6,18 @@ public class Car {
     private String model;
     private String productionStart;
     private String productionEnd;
+    private String imgUri;
+
+    public Car() {
+    }
+
+    public Car(String brand, String model, String productionStart, String productionEnd, String imgUri) {
+        this.brand = brand;
+        this.model = model;
+        this.productionStart = productionStart;
+        this.productionEnd = productionEnd;
+        this.imgUri = imgUri;
+    }
 
     public String getBrand() {
         return brand;
@@ -45,5 +57,13 @@ public class Car {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getImgUri() {
+        return imgUri;
+    }
+
+    public void setImgUri(String imgUri) {
+        this.imgUri = imgUri;
     }
 }

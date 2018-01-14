@@ -2,10 +2,9 @@ package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.controller.UtilController;
 import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
-import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
 import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
-import i5b5.daniel.serszen.pz.view.events.CustomEventHandler;
 import i5b5.daniel.serszen.pz.view.events.LoginSuccessfulEvent;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -19,11 +18,17 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 
 public class AdminLoginScene extends AbstractCustomScene {
+    private final Logger logger = LogManager.getLogger(AdminLoginScene.class);
+
     private UtilController utilController;
     private Text loginText;
     private Text passwordText;
@@ -74,7 +79,7 @@ public class AdminLoginScene extends AbstractCustomScene {
         clearButton.setOnAction(event -> {
             loginTextField.clear();
             passwordField.clear();
-        });
+            });
 
         backButton.setOnAction(event -> {
             viewDelegate.changeScene(viewDelegate.chooseSceneByName(StartingScene.class.getSimpleName()),null);
@@ -188,6 +193,7 @@ public class AdminLoginScene extends AbstractCustomScene {
 
     private void loginTaskSucceed(boolean credentialsCheck, Button source, String login) {
         if (!credentialsCheck) {
+            logger.info("Login attempt failed for admin "+login+": wrong password");
             Alert alert = new Alert(Alert.AlertType.ERROR,
                     "Nieprawidłowe hasło",
                     ButtonType.OK);

@@ -4,6 +4,7 @@ import i5b5.daniel.serszen.pz.model.exceptions.LoginException;
 import i5b5.daniel.serszen.pz.model.exceptions.codes.LoginExceptionCodes;
 import i5b5.daniel.serszen.pz.model.mybatis.mappers.LoginMapper;
 import i5b5.daniel.serszen.pz.model.services.LoginService;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,6 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-
-import org.apache.commons.codec.binary.Base64;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -64,7 +63,7 @@ public class LoginServiceImpl implements LoginService {
         String[] saltAndPass = stored.split("\\$");
         if (saltAndPass.length != 2) {
             throw new IllegalStateException(
-                    "The stored password have the form 'salt$hash'");
+                    "The stored password should have the form 'salt$hash'");
         }
         String hashOfInput = hash(password, Base64.decodeBase64(saltAndPass[0]));
         return hashOfInput.equals(saltAndPass[1]);
