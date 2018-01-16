@@ -2,6 +2,8 @@ package i5b5.daniel.serszen.pz.view.delegates;
 
 import i5b5.daniel.serszen.pz.view.scenes.AbstractCatalogScene;
 import i5b5.daniel.serszen.pz.view.scenes.AbstractCustomScene;
+import i5b5.daniel.serszen.pz.view.scenes.AdminCarCatalogScene;
+import i5b5.daniel.serszen.pz.view.scenes.AdminLoginScene;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.stage.Stage;
@@ -21,10 +23,11 @@ public class ViewDelegate {
     }
 
     public void changeScene(AbstractCustomScene scene, String login) {
-        if (scene instanceof AbstractCatalogScene && login != null) {
-            AbstractCatalogScene scene1 = (AbstractCatalogScene) scene;
+        if (scene instanceof AdminCarCatalogScene && login != null) {
+            AdminCarCatalogScene scene1 = (AdminCarCatalogScene) scene;
+            scenes.remove(AdminLoginScene.class.getSimpleName());
             scene1.getLoggedUser().setText("Zalogowany admin: " + login);
-            scene1.setAdminScene(new SimpleBooleanProperty(true));
+            scene1.setIsAdminScene(true);
             stage.setScene(scene1);
         } else {
             stage.setScene(scene);

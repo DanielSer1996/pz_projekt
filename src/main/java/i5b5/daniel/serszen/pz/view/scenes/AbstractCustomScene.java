@@ -2,13 +2,12 @@ package i5b5.daniel.serszen.pz.view.scenes;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuBar;
 
 public abstract class AbstractCustomScene extends Scene{
     protected double widthDim;
     protected double heightDim;
 
-    protected abstract Parent initRootPane();
+    protected abstract void initRootPane();
 
     public AbstractCustomScene(Parent root) {
         super(root);

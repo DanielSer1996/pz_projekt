@@ -11,6 +11,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 public class StartingScene extends AbstractCustomScene {
+    private GridPane rootPane;
+
     private Text startingSceneLabel;
     private Button adminButton;
     private Button observerButton;
@@ -31,6 +33,8 @@ public class StartingScene extends AbstractCustomScene {
         this.widthDim = 200;
         this.heightDim = 200;
 
+        configRootPane();
+
         this.startingSceneLabel = new Text("Wybierz co chcesz zrobić");
         this.startingSceneLabel.setStyle("-fx-font: normal bold 12px 'serif';");
 
@@ -44,32 +48,39 @@ public class StartingScene extends AbstractCustomScene {
             viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminLoginScene.class.getSimpleName()),null);
         });
 
+
         this.observerButton = new Button("Przeglądaj katalog");
         this.observerButton.setTooltip(new Tooltip("Pozwala na przeglądanie katalogu bez możliwości dokonywania zmian, niewymagane logowanie"));
         this.observerButton.setWrapText(true);
         this.observerButton.setStyle("-fx-background-color: #ffcc66; " +
                 "-fx-text-fill: black;" +
                 "-fx-font: normal bold 10px 'serif'");
+        this.observerButton.setOnAction(event -> {
+            viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogCarScene.class.getSimpleName()),null);
+        });
 
-        this.setRoot(initRootPane());
+        initRootPane();
+
+        this.setRoot(rootPane);
     }
 
     @Override
-    protected Parent initRootPane() {
-        GridPane root = new GridPane();
-        root.setPadding(new Insets(10, 10, 10, 10));
+    protected void initRootPane() {
+        rootPane.add(startingSceneLabel,0,0);
+        rootPane.add(adminButton,0,3);
+        rootPane.add(observerButton,0,4);
 
-        root.setVgap(15);
-        root.setHgap(5);
+    }
 
-        root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-background-color: #436994;");
+    private void configRootPane(){
+        rootPane = new GridPane();
+        rootPane.setPadding(new Insets(10, 10, 10, 10));
 
-        root.add(startingSceneLabel,0,0);
-        root.add(adminButton,0,3);
-        root.add(observerButton,0,4);
+        rootPane.setVgap(15);
+        rootPane.setHgap(5);
 
-        return root;
+        rootPane.setAlignment(Pos.CENTER);
+        rootPane.setStyle("-fx-background-color: #436994;");
     }
 
 

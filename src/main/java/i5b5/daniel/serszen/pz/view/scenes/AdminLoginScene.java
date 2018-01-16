@@ -4,7 +4,6 @@ import i5b5.daniel.serszen.pz.controller.UtilController;
 import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
 import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
 import i5b5.daniel.serszen.pz.view.events.LoginSuccessfulEvent;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -21,14 +20,13 @@ import javafx.scene.text.TextBoundsType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 
 public class AdminLoginScene extends AbstractCustomScene {
     private final Logger logger = LogManager.getLogger(AdminLoginScene.class);
 
+    private GridPane gridPane;
     private UtilController utilController;
     private Text loginText;
     private Text passwordText;
@@ -55,12 +53,15 @@ public class AdminLoginScene extends AbstractCustomScene {
         this.widthDim = 500;
         this.heightDim = 500;
 
+        configRootPane();
         initTexts();
         initTextFields();
         initButtons();
         initLoginTooltip();
 
-        this.setRoot(initRootPane());
+        initRootPane();
+
+        this.setRoot(gridPane);
     }
 
     private void initButtons() {
@@ -127,16 +128,18 @@ public class AdminLoginScene extends AbstractCustomScene {
         });
     }
 
-    @Override
-    protected GridPane initRootPane() {
-        GridPane gridPane = new GridPane();
+    private void configRootPane(){
+        gridPane = new GridPane();
 
         gridPane.setPadding(new Insets(10, 10, 10, 10));
         gridPane.setVgap(5);
         gridPane.setHgap(5);
 
         gridPane.setAlignment(Pos.CENTER);
+    }
 
+    @Override
+    protected void initRootPane() {
 
         gridPane.add(loginText, 0, 0);
         gridPane.add(loginTextField, 1, 0);
@@ -152,14 +155,13 @@ public class AdminLoginScene extends AbstractCustomScene {
                 new EventHandler<Event>() {
                     @Override
                     public void handle(Event event) {
-                        viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogScene.class.getSimpleName()),
+                        viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminCarCatalogScene.class.getSimpleName()),
                                 loginTextField.getText());
                     }
                 });
 
         gridPane.setStyle("-fx-background-color: #436994;");
 
-        return gridPane;
     }
 
     private void loginButtonFire(String login, String password, Button source)  {

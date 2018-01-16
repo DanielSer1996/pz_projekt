@@ -3,7 +3,6 @@ package i5b5.daniel.serszen.pz.view.scenes;
 import i5b5.daniel.serszen.pz.controller.CarController;
 import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
 import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
-import i5b5.daniel.serszen.pz.view.events.CarAddedEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -15,8 +14,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
+import javafx.util.StringConverter;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class AddCarScene extends Scene {
@@ -37,8 +39,8 @@ public class AddCarScene extends Scene {
     private TextField brand;
     private ComboBox<String> carModelsChoser;
     private TextField model;
-    private TextField productionStart;
-    private TextField productionEnd;
+    private DatePicker productionStart;
+    private DatePicker productionEnd;
     private TextField imgUri;
     private Button chooseImg;
 
@@ -90,8 +92,8 @@ public class AddCarScene extends Scene {
                     addedCar = new Car(
                             brand.getText(),
                             model.getText(),
-                            productionStart.getText(),
-                            productionEnd.getText(),
+                            productionStart.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                            productionEnd.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                             imgUri.getText());
                     carController.insertCar(addedCar);
                     return null;
@@ -106,7 +108,7 @@ public class AddCarScene extends Scene {
                         "Niepoprawne dane",
                         ButtonType.OK);
                 alert.setX(this.getWindow().getX());
-                alert.setY(this.getWindow().getY() + this.getWindow().getHeight() / 2);
+                alert.setY(this.getWindow().getY() + this.getWindow().getHeight() / 3);
                 alert.showAndWait();
             });
 
@@ -142,11 +144,12 @@ public class AddCarScene extends Scene {
         brand.setEditable(false);
         model = new TextField();
         model.setEditable(false);
-        productionStart = new TextField();
-        productionEnd = new TextField();
+        productionStart = new DatePicker();
+        productionEnd = new DatePicker();
         imgUri = new TextField();
         imgUri.setEditable(false);
     }
+
 
     private void initLabels() {
         brandLabel = new Label("Marka samochodu");

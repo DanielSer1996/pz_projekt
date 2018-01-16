@@ -18,4 +18,12 @@ public class DataIncorrectException extends Exception{
         super(message, cause);
         this.code = code;
     }
+
+    public DataIncorrectExceptionCodes getCode() {
+        return code;
+    }
+
+    public void setCode(DataIncorrectExceptionCodes code) {
+        this.code = code;
+    }
 }

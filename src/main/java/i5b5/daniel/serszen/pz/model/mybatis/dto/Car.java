@@ -66,4 +66,29 @@ public class Car {
     public void setImgUri(String imgUri) {
         this.imgUri = imgUri;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null){
+            return false;
+        }
+        if(!(obj instanceof Car)){
+            return false;
+        }
+        Car other = (Car)obj;
+        if(!this.brand.equals(other.getBrand())){
+            return false;
+        }
+        if(!this.model.equals(other.getModel())){
+            return false;
+        }
+        if(!this.productionStart.equals(other.getProductionStart())){
+            return false;
+        }
+        if(!this.productionEnd.equals(other.getProductionEnd())){
+            return false;
+        }
+
+        return true;
+    }
 }
