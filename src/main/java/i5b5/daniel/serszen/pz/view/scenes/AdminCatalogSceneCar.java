@@ -2,7 +2,9 @@ package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
 import i5b5.daniel.serszen.pz.view.events.CarAddedEvent;
+import i5b5.daniel.serszen.pz.view.events.CarChosenEvent;
 import i5b5.daniel.serszen.pz.view.events.CarDeletedEvent;
+import i5b5.daniel.serszen.pz.view.events.action.handlers.DeleteCarHandler;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
@@ -12,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -24,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class AdminCarCatalogScene extends CatalogCarScene {
-    private final Logger logger = LogManager.getLogger(AdminCarCatalogScene.class);
+public class AdminCatalogSceneCar extends CatalogCarScene {
+    private final Logger logger = LogManager.getLogger(AdminCatalogSceneCar.class);
 
     private Text loggedUser = new Text();
     private BooleanProperty isAdminScene = new SimpleBooleanProperty();
@@ -34,12 +37,23 @@ public class AdminCarCatalogScene extends CatalogCarScene {
 
     private Button deleteButton;
 
-    public AdminCarCatalogScene() {
+    private ContextMenu deleteItemContextMenu;
+
+    private MenuItem deleteItemMenu;
+
+    private DeleteCarHandler deleteCarHandler;
+
+    public AdminCatalogSceneCar() {
         this(new GridPane());
     }
 
-    private AdminCarCatalogScene(Parent root) {
+    private AdminCatalogSceneCar(Parent root) {
         super(root);
+        deleteCarHandler = new DeleteCarHandler(brands,
+                models,
+                modelVersions,
+                carController,
+                contentPane);
         initialize();
     }
 
@@ -49,16 +63,16 @@ public class AdminCarCatalogScene extends CatalogCarScene {
         alterSearchingPane();
         changeLabel();
         alterTitleText();
-
+        initContextMenu();
+        alterTableClickingBehaviour();
         alterRootPaneContent();
     }
 
     private void changeLabel() {
-        menuBar.getMenus().get(2).getItems().get(1).setText("Wyloguj");
         menuBar.getMenus().get(2).getItems().get(1).setOnAction(
                 event -> {
-                    viewDelegate.getScenes().remove(AdminCarCatalogScene.class.getSimpleName());
-                    viewDelegate.getScenes().remove(AdminCarPartCatalogScene.class.getSimpleName());
+                    viewDelegate.getScenes().remove(AdminCatalogSceneCar.class.getSimpleName());
+                    viewDelegate.getScenes().remove(AdminCatalogSceneCarPart.class.getSimpleName());
                     viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminLoginScene.class.getSimpleName()), null);
                 });
     }
@@ -68,7 +82,7 @@ public class AdminCarCatalogScene extends CatalogCarScene {
     }
 
     private void alterRootPane() {
-        deleteButton = new Button("Usuń zaznaczoną pozycję");
+        deleteButton = new Button();
         rootPane.addEventHandler(CarDeletedEvent.CAR_DELETED_EVENT_TYPE, new EventHandler<CarDeletedEvent>() {
             @Override
             public void handle(CarDeletedEvent event) {
@@ -77,34 +91,7 @@ public class AdminCarCatalogScene extends CatalogCarScene {
                 }
             }
         });
-        deleteButton.setOnAction(event -> {
-            if (currentCar.getBrand() != null
-                    && currentCar.getModel() != null
-                    && currentCar.getProductionStart() != null && currentCar.getProductionEnd() != null) {
-                modelVersions.remove(currentCar.getProductionStart() + " - " + currentCar.getProductionEnd());
-                if (modelVersions.isEmpty()) {
-                    models.remove(currentCar.getModel());
-                }
-                if (models.isEmpty()) {
-                    brands.remove(currentCar.getBrand());
-                }
-                carController.deleteCarsByBrandModelAndProductionDate(currentCar.getBrand(),
-                        currentCar.getModel(),
-                        currentCar.getProductionStart(),
-                        currentCar.getProductionEnd());
-            } else if (currentCar.getBrand() != null
-                    && currentCar.getModel() != null) {
-                models.remove(currentCar.getModel());
-                if (models.isEmpty()) {
-                    brands.remove(currentCar.getBrand());
-                }
-                carController.deleteCarsByBrandAndModel(currentCar.getBrand(), currentCar.getModel());
-            } else if (currentCar.getBrand() != null) {
-                brands.remove(currentCar.getBrand());
-                carController.deleteCarsByBrand(currentCar.getBrand());
-            }
-            deleteButton.fireEvent(new CarDeletedEvent(CarDeletedEvent.CAR_DELETED_EVENT_TYPE, currentCar));
-        });
+        deleteButton.setOnAction(deleteCarHandler);
 
     }
 
@@ -161,8 +148,76 @@ public class AdminCarCatalogScene extends CatalogCarScene {
         searchingPanel.getChildren().add(addNewCarButton);
     }
 
+    private void alterTableClickingBehaviour() {
+        leftTable.setContextMenu(deleteItemContextMenu);
+        leftTable.setOnMouseClicked(event -> {
+            String chosenBrand = leftTable.getSelectionModel().getSelectedItem();
+            if (chosenBrand != null) {
+                deleteCarHandler.getCar().setModel(null);
+                currentCar.setModel(null);
+                deleteCarHandler.getCar().setProductionStart(null);
+                currentCar.setProductionStart(null);
+                deleteCarHandler.getCar().setProductionEnd(null);
+                currentCar.setProductionEnd(null);
+                deleteCarHandler.getCar().setBrand(chosenBrand);
+                currentCar.setBrand(chosenBrand);
+                setCarModelTable();
+            }
+            if(MouseButton.SECONDARY.equals(event.getButton())){
+                deleteItemContextMenu.show(this.getWindow());
+            }
+        });
+
+        centralTable.setContextMenu(deleteItemContextMenu);
+        centralTable.setOnMouseClicked(event -> {
+            String chosenModel = centralTable.getSelectionModel().getSelectedItem();
+            if (chosenModel != null) {
+
+                deleteCarHandler.getCar().setProductionStart(null);
+                currentCar.setProductionStart(null);
+                deleteCarHandler.getCar().setProductionEnd(null);
+                currentCar.setProductionEnd(null);
+                deleteCarHandler.getCar().setModel(chosenModel);
+                currentCar.setModel(chosenModel);
+
+                setCarModelVersionTable();
+
+            }
+            if(MouseButton.SECONDARY.equals(event.getButton())){
+                deleteItemContextMenu.show(this.getWindow());
+            }
+        });
+
+        rightTable.setContextMenu(deleteItemContextMenu);
+        rightTable.setOnMouseClicked(event -> {
+            String chosenModelVersion = rightTable.getSelectionModel().getSelectedItem();
+            if (chosenModelVersion != null) {
+                deleteCarHandler.getCar().setProductionStart(chosenModelVersion.substring(0, 10));
+                currentCar.setProductionStart(chosenModelVersion.substring(0, 10));
+                deleteCarHandler.getCar().setProductionEnd(chosenModelVersion.substring(13));
+                currentCar.setProductionEnd(chosenModelVersion.substring(13));
+                getUriAndIdForCurrentCar();
+                deleteCarHandler.getCar().setId(currentCar.getId());
+                rightTable.fireEvent(new CarChosenEvent(CarChosenEvent.CAR_CHOSEN_BASE, currentCar));
+            }
+            if(MouseButton.SECONDARY.equals(event.getButton())){
+                deleteItemContextMenu.show(this.getWindow());
+            }
+            if(event.getClickCount() == 2 && currentCar.getProductionStart() != null){
+                viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminCatalogSceneCarPart.class.getSimpleName()),currentCar);
+            }
+        });
+
+        rightTable.addEventHandler(CarChosenEvent.CAR_CHOSEN_BASE, new EventHandler<CarChosenEvent>() {
+            @Override
+            public void handle(CarChosenEvent event) {
+                setImage(event.getCar().getImgUri());
+            }
+        });
+    }
+
     private void initAddCarButton() {
-        addNewCarButton = new Button("Dodaj centralTableColumn samochodu");
+        addNewCarButton = new Button("Dodaj model samochodu");
         addNewCarButton.setOnAction(event -> {
             Window owner = ((Node) event.getTarget()).getScene().getWindow();
 
@@ -171,7 +226,7 @@ public class AdminCarCatalogScene extends CatalogCarScene {
             addCarStage.initOwner(owner);
             addCarStage.setTitle("Dodawanie samochodu");
             addCarStage.setResizable(false);
-            AddCarScene addCarScene = new AddCarScene(new Pane(), 400, 500);
+            AddCarScene addCarScene = (AddCarScene) viewDelegate.chooseSceneByName(AddCarScene.class.getSimpleName());
             addCarStage.setScene(addCarScene);
             addCarStage.setOnCloseRequest(event1 -> {
                 if (addCarScene.getAddedCar() != null) {
@@ -185,20 +240,19 @@ public class AdminCarCatalogScene extends CatalogCarScene {
 
     }
 
+    private void initContextMenu() {
+        deleteItemContextMenu = new ContextMenu();
+        deleteItemMenu = new MenuItem();
+        deleteItemContextMenu.getItems().add(deleteItemMenu);
+        deleteItemMenu.setOnAction(deleteCarHandler);
+    }
+
     private void alterTitleText() {
         titlePane.setAlignment(Pos.CENTER);
         loggedUser.setId("logged");
         titlePane.getChildren().add(loggedUser);
     }
 
-
-    public Text getTitleText() {
-        return titleText;
-    }
-
-    public void setTitleText(Text titleText) {
-        this.titleText = titleText;
-    }
 
     public Button getDeleteButton() {
         return deleteButton;

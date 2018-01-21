@@ -31,10 +31,10 @@
 
 }
 
-#title{
+.text-area{
     -fx-font-family: BOLD;
+    -fx-text-fill: red;
     -fx-font-size: 15;
-    -fx-text-fill: black;
 }
 
 #logged{

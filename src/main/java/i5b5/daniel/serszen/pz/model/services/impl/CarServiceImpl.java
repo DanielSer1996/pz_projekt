@@ -36,17 +36,20 @@ public class CarServiceImpl implements CarService{
     }
 
     @Override
-    public void deleteCarsByBrand(String brand) {
+    public void deleteCarsByBrand(long id, String brand) {
+        carMapper.cascadeDelete(id);
         carMapper.deleteCarsByBrand(brand);
     }
 
     @Override
-    public void deleteCarsByBrandAndModel(String brand, String model) {
+    public void deleteCarsByBrandAndModel(long id, String brand, String model) {
+        carMapper.cascadeDelete(id);
         carMapper.deleteCarsByBrandAndModel(brand,model);
     }
 
     @Override
-    public void deleteCarsByBrandModelAndProductionDate(String brand, String model, String productionStartDate, String productionEndDate) {
+    public void deleteCarsByBrandModelAndProductionDate(long id,String brand, String model, String productionStartDate, String productionEndDate) {
+        carMapper.cascadeDelete(id);
         carMapper.deleteCarsByBrandModelAndProductionDate(brand, model, productionStartDate, productionEndDate);
     }
 

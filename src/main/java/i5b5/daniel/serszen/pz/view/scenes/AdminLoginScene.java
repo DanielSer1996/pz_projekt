@@ -155,7 +155,7 @@ public class AdminLoginScene extends AbstractCustomScene {
                 new EventHandler<Event>() {
                     @Override
                     public void handle(Event event) {
-                        viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminCarCatalogScene.class.getSimpleName()),
+                        viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminCatalogSceneCar.class.getSimpleName()),
                                 loginTextField.getText());
                     }
                 });

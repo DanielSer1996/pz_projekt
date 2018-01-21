@@ -12,16 +12,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
 import javafx.util.StringConverter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class AddCarScene extends Scene {
+public class AddCarScene extends AbstractCustomScene {
+    private final Logger logger = LogManager.getLogger(AddCarScene.class);
+
     private GridPane rootPane;
 
     private List<Car> carList;
@@ -51,8 +56,13 @@ public class AddCarScene extends Scene {
     private final CarController carController;
     private Car addedCar;
 
-    public AddCarScene(Parent root, double width, double height) {
-        super(root, width, height);
+
+    public AddCarScene(){
+        this(new Pane());
+    }
+
+    public AddCarScene(Parent root) {
+        super(root);
         carController = BeanFactory.getCarController();
         init();
     }
@@ -65,7 +75,7 @@ public class AddCarScene extends Scene {
         initLabels();
         initFileChooser();
         initConfirmButton();
-        initRoot();
+        initRootPane();
 
         this.setRoot(rootPane);
     }
@@ -74,7 +84,7 @@ public class AddCarScene extends Scene {
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("*.jpg", "*.jpg"),
                 new FileChooser.ExtensionFilter("*.png", "*.png"));
-        chooseImg = new Button("Wybierz zdjęcie");
+        chooseImg = new Button();
         chooseImg.setOnAction(event -> {
             File file = fileChooser.showOpenDialog(this.getWindow());
             if (file != null) {
@@ -84,7 +94,7 @@ public class AddCarScene extends Scene {
     }
 
     private void initConfirmButton() {
-        confirmButton = new Button("Dodaj");
+        confirmButton = new Button();
         confirmButton.setOnAction(event -> {
             Task task = new Task() {
                 @Override
@@ -116,29 +126,6 @@ public class AddCarScene extends Scene {
         });
     }
 
-    private void initRoot() {
-        rootPane = new GridPane();
-        rootPane.setPadding(new Insets(10, 10, 10, 10));
-        rootPane.setVgap(5);
-        rootPane.setHgap(5);
-        rootPane.setAlignment(Pos.CENTER);
-
-        rootPane.add(brandLabel, 2, 0);
-        rootPane.add(cars, 0, 1);
-        rootPane.add(brand, 2, 1);
-        rootPane.add(modelLabel, 2, 2);
-        rootPane.add(carModelsChoser, 0, 3);
-        rootPane.add(model, 2, 3);
-        rootPane.add(prodStartLabel, 2, 4);
-        rootPane.add(productionStart, 2, 5);
-        rootPane.add(prodEndLabel, 2, 6);
-        rootPane.add(productionEnd, 2, 7);
-        rootPane.add(chosenFile, 2, 8);
-        rootPane.add(imgUri, 2, 9);
-        rootPane.add(chooseImg, 2, 10);
-        rootPane.add(confirmButton, 2, 12);
-    }
-
     private void initTextFields() {
         brand = new TextField();
         brand.setEditable(false);
@@ -152,11 +139,11 @@ public class AddCarScene extends Scene {
 
 
     private void initLabels() {
-        brandLabel = new Label("Marka samochodu");
-        modelLabel = new Label("Model samochodu");
-        prodStartLabel = new Label("Początek produkcji");
-        prodEndLabel = new Label("Koniec produkcji");
-        chosenFile = new Label("Wybrany plik");
+        brandLabel = new Label();
+        modelLabel = new Label();
+        prodStartLabel = new Label();
+        prodEndLabel = new Label();
+        chosenFile = new Label();
     }
 
     private void initContent() {
@@ -250,5 +237,29 @@ public class AddCarScene extends Scene {
 
     public void setAddedCar(Car addedCar) {
         this.addedCar = addedCar;
+    }
+
+    @Override
+    protected void initRootPane() {
+        rootPane = new GridPane();
+        rootPane.setPadding(new Insets(10, 10, 10, 10));
+        rootPane.setVgap(5);
+        rootPane.setHgap(5);
+        rootPane.setAlignment(Pos.CENTER);
+
+        rootPane.add(brandLabel, 2, 0);
+        rootPane.add(cars, 0, 1);
+        rootPane.add(brand, 2, 1);
+        rootPane.add(modelLabel, 2, 2);
+        rootPane.add(carModelsChoser, 0, 3);
+        rootPane.add(model, 2, 3);
+        rootPane.add(prodStartLabel, 2, 4);
+        rootPane.add(productionStart, 2, 5);
+        rootPane.add(prodEndLabel, 2, 6);
+        rootPane.add(productionEnd, 2, 7);
+        rootPane.add(chosenFile, 2, 8);
+        rootPane.add(imgUri, 2, 9);
+        rootPane.add(chooseImg, 2, 10);
+        rootPane.add(confirmButton, 2, 12);
     }
 }

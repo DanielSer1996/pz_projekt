@@ -12,9 +12,10 @@ public interface CarService {
     List<Car> getCarsByModel(String model);
     List<Car> getAllCars();
 
-    void deleteCarsByBrand(String brand);
-    void deleteCarsByBrandAndModel(String brand, String model);
-    void deleteCarsByBrandModelAndProductionDate(String brand,
+    void deleteCarsByBrand(long id, String brand);
+    void deleteCarsByBrandAndModel(long id, String brand, String model);
+    void deleteCarsByBrandModelAndProductionDate(long id,
+                                                 String brand,
                                                  String model,
                                                  String productionStartDate,
                                                  String productionEndDate);

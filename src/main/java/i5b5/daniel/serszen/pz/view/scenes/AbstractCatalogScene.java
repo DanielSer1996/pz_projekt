@@ -1,6 +1,7 @@
 package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.view.App;
+import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,10 +14,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
 
-public abstract class AbstractCatalogScene extends AbstractCustomScene{
+public abstract class AbstractCatalogScene extends AbstractCustomScene {
     protected final GridPane rootPane = new GridPane();
     protected MenuBar menuBar;
 
@@ -36,22 +38,36 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene{
     protected Label searchText;
     protected TextField searchField;
     protected Button searchButton;
+    protected Menu menuFile;
+    protected Menu menuEdit;
+    protected Menu changeSkinMenu;
+    protected MenuItem darkSkin;
+    protected MenuItem brightSkin;
+    protected MenuItem uglySkin;
+    protected Menu changeLanguageMenu;
+    protected MenuItem polish;
+    protected MenuItem english;
+
+    protected Menu exitMenu;
+    protected MenuItem exit;
+    protected MenuItem back;
 
 
     protected GridPane contentPane;
 
+    protected ViewDelegate viewDelegate;
 
     public AbstractCatalogScene(Parent root) {
         super(root);
+        viewDelegate = ViewDelegate.getInstance();
         init();
     }
 
-    private void init(){
+    private void init() {
         this.widthDim = App.getScreenWidth();
         this.heightDim = App.getScreenHeight();
 
         initRootPane();
-        initSkin();
         initMenuBar();
         configContentPane();
         configSearchingPanel();
@@ -60,7 +76,8 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene{
         initSearchingPane();
         initTitleText();
         addContent();
-
+        addBackButton();
+        changeSkin();
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(menuBar);
         borderPane.setCenter(rootPane);
@@ -68,56 +85,75 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene{
         this.setRoot(borderPane);
     }
 
-    private void initSkin(){
-        this.getStylesheets().add(getClass().getResource("/css/dark_skin.css").toExternalForm());
-    }
-
     private void initTitleText() {
         titlePane = new HBox();
         titlePane.setAlignment(Pos.TOP_LEFT);
         titlePane.setSpacing(widthDim / 2);
-        titleText = new Text("Katalog części samochodowych");
+        titleText = new Text();
         titleText.setId("title");
         titlePane.getChildren().add(titleText);
     }
 
     private void addContent() {
-        rootPane.add(titlePane,0,5);
+        rootPane.add(titlePane, 0, 5);
         rootPane.add(contentPane, 0, 9);
     }
 
-    protected void initRootPane(){
+    protected void initRootPane() {
         rootPane.setPadding(new Insets(10, 10, 10, 10));
         rootPane.setVgap(5);
         rootPane.setHgap(5);
         rootPane.setAlignment(Pos.CENTER);
     }
 
-    private void initMenuBar(){
+    private void initMenuBar() {
         menuBar = new MenuBar();
-        Menu menuFile = new Menu("Plik");
-        Menu menuEdit = new Menu("Edytuj");
+        menuFile = new Menu();
+        menuEdit = new Menu();
 
-        Menu changeSkinMenu = new Menu("Zmień skórkę");
-        MenuItem darkSkin = new MenuItem("Ciemna skórka");
-        darkSkin.setOnAction(event -> changeSkin("dark_skin"));
+        changeSkinMenu = new Menu();
+        darkSkin = new MenuItem();
+        darkSkin.setOnAction(event -> {
+            viewDelegate.setSkinFile("dark_skin");
+            changeSkin();
+        });
 
-        MenuItem brightSkin = new MenuItem("Jasna skórka");
-        brightSkin.setOnAction(event -> changeSkin("bright_skin"));
+        brightSkin = new MenuItem();
+        brightSkin.setOnAction(event -> {
+            viewDelegate.setSkinFile("bright_skin");
+            changeSkin();
+        });
 
-        MenuItem uglySkin = new MenuItem("Brzydka skórka");
-        uglySkin.setOnAction(event -> changeSkin("ugly_skin"));
+        uglySkin = new MenuItem();
+        uglySkin.setOnAction(event -> {
+            viewDelegate.setSkinFile("ugly_skin");
+            changeSkin();
+        });
 
-        changeSkinMenu.getItems().addAll(darkSkin,brightSkin,uglySkin);
+        changeSkinMenu.getItems().addAll(darkSkin, brightSkin, uglySkin);
 
-        menuEdit.getItems().add(changeSkinMenu);
+        changeLanguageMenu = new Menu();
+        polish = new MenuItem();
+        english = new MenuItem();
 
-        menuBar.getMenus().addAll(menuFile,menuEdit);
+        polish.setOnAction(e -> {
+            viewDelegate.setLanguage("pl");
+            viewDelegate.changeLanguage();
+        });
+        english.setOnAction(e -> {
+            viewDelegate.setLanguage("en");
+            viewDelegate.changeLanguage();
+        });
+
+        changeLanguageMenu.getItems().addAll(polish, english);
+
+        menuEdit.getItems().addAll(changeSkinMenu, changeLanguageMenu);
+
+        menuBar.getMenus().addAll(menuFile, menuEdit);
     }
 
-    private void changeSkin(String skin){
-        this.getStylesheets().remove(0);
-        this.getStylesheets().add(getClass().getResource("/css/"+skin+".css").toExternalForm());
+    private void changeSkin() {
+        viewDelegate.changeAppSkin(this);
     }
 
     private void configContentPane() {
@@ -136,9 +172,9 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene{
     }
 
     private void initSearchingPane() {
-        searchText = new Label("Wpisz szukaną frazę");
+        searchText = new Label();
         searchField = new TextField();
-        searchButton = new Button("Szukaj");
+        searchButton = new Button();
         initImageView();
 
         searchingPanel.getChildren().addAll(searchText, searchField, searchButton, itemImage);
@@ -193,7 +229,16 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene{
 
     }
 
+    protected void addBackButton() {
+        exitMenu = new Menu();
+        exit = new MenuItem();
+        back = new MenuItem();
+        exitMenu.getItems().addAll(exit, back);
 
+        exit.setOnAction(event -> this.getWindow().fireEvent(new WindowEvent(this.getWindow(), WindowEvent.WINDOW_CLOSE_REQUEST)));
+
+        menuBar.getMenus().add(exitMenu);
+    }
 
     private void initImageView() {
         itemImage = new ImageView();
@@ -221,10 +266,12 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene{
         return new Image(file.toURI().toString(), 400, 300, false, false);
     }
 
-
-
     public GridPane getRootPane() {
         return rootPane;
+    }
+
+    public ViewDelegate getViewDelegate() {
+        return viewDelegate;
     }
 
 }

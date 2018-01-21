@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="i5b5.daniel.serszen.pz.model.mybatis.mappers.CarPartMapper">
+
+    <resultMap id="carPartMap" type="i5b5.daniel.serszen.pz.model.mybatis.dto.CarPart">
+        <result property="id" column="CAR_PART_ID"/>
+        <result property="name" column="CAR_PART_NAME"/>
+        <result property="category" column="CN"/>
+        <result property="producer" column="CAR_PART_PRODUCER"/>
+        <result property="producerModelCode" column="CAR_PART_PRODUCER_MODEL_CODE"/>
+        <result property="imgUri" column="CAR_PART_IMG_URI"/>
+    </resultMap>
+    <delete id="cascadeDelete">
+        DELETE FROM CAR_PART_REL
+        WHERE CAR_PART_ID = #{id}
+    </delete>
+    <delete id="deleteCarPartsByCategoryNameAndProducer">
+        DELETE FROM CAR_PART
+        WHERE CAR_PART_NAME = #{name}
+              AND CAR_PART_PRODUCER = #{producer}
+              AND CATEGORY_ID = (SELECT CATEGORY_ID
+                                 FROM CAR_PARTS_CATEGORY_DICT
+                                 WHERE CATEGORY_NAME = #{category})
+    </delete>
+    <delete id="deleteCarPartsByCategoryAndName">
+        DELETE FROM CAR_PART
+        WHERE CAR_PART_NAME = #{name}
+              AND CATEGORY_ID = (SELECT CATEGORY_ID
+                                 FROM CAR_PARTS_CATEGORY_DICT
+                                 WHERE CATEGORY_NAME = #{category})
+    </delete>
+    <delete id="deleteCarPartsByCategory">
+        DELETE FROM CAR_PART
+        WHERE CATEGORY_ID = (SELECT CATEGORY_ID
+                             FROM CAR_PARTS_CATEGORY_DICT
+                             WHERE CATEGORY_NAME = #{category})
+    </delete>
+
+    <select id="getAllCarPartsForCar" resultMap="carPartMap">
+        SELECT
+            CP.CAR_PART_ID,
+            CP.CAR_PART_NAME,
+            CP.CAR_PART_PRODUCER,
+            CP.CAR_PART_PRODUCER_MODEL_CODE,
+            DICT.CATEGORY_NAME CN,
+            CP.CAR_PART_IMG_URI,
+            CPR.CAR_ID
+        FROM CAR_PART CP
+            INNER JOIN CAR_PARTS_CATEGORY_DICT DICT ON CP.CATEGORY_ID = DICT.CATEGORY_ID
+            INNER JOIN CAR_PART_REL CPR ON CP.CAR_PART_ID = CPR.CAR_PART_ID
+        WHERE CPR.CAR_ID = #{car.id}
+    </select>
+</mapper>

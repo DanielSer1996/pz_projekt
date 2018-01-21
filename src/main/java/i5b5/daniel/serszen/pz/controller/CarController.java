@@ -37,19 +37,20 @@ public class CarController {
         return carService.getCarsByModel(model);
     }
 
-    public void deleteCarsByBrand(String brand) {
-        carService.deleteCarsByBrand(brand);
+    public void deleteCarsByBrand(long id, String brand) {
+        carService.deleteCarsByBrand(id, brand);
     }
 
-    public void deleteCarsByBrandAndModel(String brand, String model) {
-        carService.deleteCarsByBrandAndModel(brand, model);
+    public void deleteCarsByBrandAndModel(long id, String brand, String model) {
+        carService.deleteCarsByBrandAndModel(id, brand, model);
     }
 
-    public void deleteCarsByBrandModelAndProductionDate(String brand,
+    public void deleteCarsByBrandModelAndProductionDate(long id,
+                                                        String brand,
                                                         String model,
                                                         String productionStartDate,
                                                         String productionEndDate) {
-        carService.deleteCarsByBrandModelAndProductionDate(brand, model, productionStartDate, productionEndDate);
+        carService.deleteCarsByBrandModelAndProductionDate(id, brand, model, productionStartDate, productionEndDate);
     }
 
     public void insertCar(Car car) throws DataIncorrectException {

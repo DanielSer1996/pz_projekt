@@ -22,4 +22,5 @@ public interface CarMapper {
                                                  @Param("productionEndDate")String productionEndDate);
 
     void insertCar(@Param("car") Car car);
+    void cascadeDelete(@Param("id") long id);
 }

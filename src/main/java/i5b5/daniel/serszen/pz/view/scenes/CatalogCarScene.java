@@ -9,15 +9,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
-import javafx.stage.WindowEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +24,6 @@ public class CatalogCarScene extends AbstractCatalogScene {
     private Logger logger = LogManager.getLogger(CatalogCarScene.class);
 
     protected CarController carController;
-    protected ViewDelegate viewDelegate;
 
     protected List<Car> cars = new ArrayList<>();
 
@@ -46,13 +39,12 @@ public class CatalogCarScene extends AbstractCatalogScene {
 
     public CatalogCarScene(Parent root) {
         super(root);
-        viewDelegate = ViewDelegate.getInstance();
         carController = BeanFactory.getCarController();
         currentCar = new Car();
         setTableClickingBehaviour();
         setTableDetails();
-        addLogoutButton();
         setTableContent();
+        alterBackButton();
         initAllCars();
     }
 
@@ -102,8 +94,9 @@ public class CatalogCarScene extends AbstractCatalogScene {
             if (chosenModelVersion != null) {
                 currentCar.setProductionStart(chosenModelVersion.substring(0, 10));
                 currentCar.setProductionEnd(chosenModelVersion.substring(13));
-                getUriForCurrentCar();
+                getUriAndIdForCurrentCar();
                 rightTable.fireEvent(new CarChosenEvent(CarChosenEvent.CAR_CHOSEN_BASE, currentCar));
+                viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogCarPartScene.class.getSimpleName()),currentCar);
             }
         });
 
@@ -147,20 +140,13 @@ public class CatalogCarScene extends AbstractCatalogScene {
         }
     }
 
-    protected void addLogoutButton() {
-        Menu ex = new Menu("Nawigacja");
-        MenuItem exit = new MenuItem("Wyjdź");
-        MenuItem logout = new MenuItem("Wstecz");
-        ex.getItems().addAll(exit, logout);
-
-        exit.setOnAction(event -> this.getWindow().fireEvent(new WindowEvent(this.getWindow(), WindowEvent.WINDOW_CLOSE_REQUEST)));
-
-        logout.setOnAction(event -> {
-            viewDelegate.getScenes().remove(CatalogCarScene.class.getSimpleName());
-            viewDelegate.changeScene(viewDelegate.chooseSceneByName(StartingScene.class.getSimpleName()), null);
-        });
-
-        menuBar.getMenus().add(ex);
+    protected void alterBackButton() {
+        menuBar.getMenus().get(2).getItems().get(1).setOnAction(
+                event -> {
+                    viewDelegate.getScenes().remove(CatalogCarScene.class.getSimpleName());
+                    viewDelegate.getScenes().remove(CatalogCarPartScene.class.getSimpleName());
+                    viewDelegate.changeScene(viewDelegate.chooseSceneByName(StartingScene.class.getSimpleName()), null);
+                });
     }
 
     protected void setCarModelVersionTable() {
@@ -174,9 +160,10 @@ public class CatalogCarScene extends AbstractCatalogScene {
         }
     }
 
-    private void getUriForCurrentCar() {
+    protected void getUriAndIdForCurrentCar() {
         for (Car car : cars) {
             if (car.equals(currentCar)) {
+                currentCar.setId(car.getId());
                 currentCar.setImgUri(car.getImgUri());
             }
         }

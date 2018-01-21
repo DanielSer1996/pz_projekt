@@ -56,6 +56,10 @@
         AND TO_CHAR(CAR_PRODUCTION_START_DATE,'YYYY-MM-DD') = #{productionStartDate}
         AND TO_CHAR(CAR_PRODUCTION_END_DATE,'YYYY-MM-DD') = #{productionEndDate}
     </delete>
+    <delete id="cascadeDelete">
+        DELETE FROM CAR_PART_REL
+        WHERE CAR_ID = #{id}
+    </delete>
 
     <sql id="basicCarSelect">
         SELECT
