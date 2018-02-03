@@ -1,17 +1,18 @@
 package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.model.mybatis.dto.CarPart;
-import i5b5.daniel.serszen.pz.view.events.CarChosenEvent;
-import i5b5.daniel.serszen.pz.view.events.CarPartAddedEvent;
-import i5b5.daniel.serszen.pz.view.events.CarPartChosenEvent;
-import i5b5.daniel.serszen.pz.view.events.CarPartDeletedEvent;
+import i5b5.daniel.serszen.pz.view.events.*;
 import i5b5.daniel.serszen.pz.view.events.action.handlers.DeleteCarPartHandler;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,7 +87,7 @@ public class AdminCatalogSceneCarPart extends CatalogCarPartScene{
             categories.clear();
             setImage(null);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "Pomyślnie usunięto część samochodową!",
+                    viewDelegate.getMessageForAlert("carPartDeletedSuccess"),
                     ButtonType.OK);
             alert.setX(getWindow().getX() + getWindow().getWidth() / 3);
             alert.setY(getWindow().getY() + getWindow().getHeight() / 3);
@@ -107,18 +108,19 @@ public class AdminCatalogSceneCarPart extends CatalogCarPartScene{
     }
 
     private void alterSearchingPane() {
-        searchingPanel.addEventHandler(CarPartAddedEvent.CAR_PART_ADDED_EVENT, event -> {
-            carParts.clear();
+        rightPanel.addEventHandler(CarPartAddedEvent.CAR_PART_ADDED_EVENT, event -> {
+            viewDelegate.getScenes().remove(AddCarPartScene.class.getSimpleName());
+            parts.clear();
             producers.clear();
-            categories.add(event.getCarPart().getCategory());
+            carParts.add(event.getCarPart());
             createCategoriesList();
         });
 
-        searchingPanel.getChildren().add(addCarPartButton);
+        rightPanel.getChildren().add(addCarPartButton);
     }
 
     private void changeLabel() {
-        menuBar.getMenus().get(2).getItems().get(1).setOnAction(
+        menuBar.getMenus().get(1).getItems().get(1).setOnAction(
                 event -> {
                     viewDelegate.getScenes().remove(AdminCatalogSceneCarPart.class.getSimpleName());
                     viewDelegate.changeScene(viewDelegate.chooseSceneByName(AdminCatalogSceneCar.class.getSimpleName()), null);
@@ -145,7 +147,8 @@ public class AdminCatalogSceneCarPart extends CatalogCarPartScene{
                 currentCarPart.setCategory(chosenBrand);
                 setCarPartsTable();
             }
-            if(MouseButton.SECONDARY.equals(event.getButton())){
+            if(MouseButton.SECONDARY.equals(event.getButton())
+                    && event.isSecondaryButtonDown()){
                 deleteItemContextMenu.show(this.getWindow());
             }
         });
@@ -163,7 +166,8 @@ public class AdminCatalogSceneCarPart extends CatalogCarPartScene{
                 setCarPartProducersTable();
 
             }
-            if(MouseButton.SECONDARY.equals(event.getButton())){
+            if(MouseButton.SECONDARY.equals(event.getButton())
+                    && event.isSecondaryButtonDown()){
                 deleteItemContextMenu.show(this.getWindow());
             }
         });
@@ -176,18 +180,16 @@ public class AdminCatalogSceneCarPart extends CatalogCarPartScene{
                 currentCarPart.setProducer(chosenModelVersion);
                 getUriForCurrentCarPart();
                 deleteCarPartHandler.getCarPart().setId(currentCarPart.getId());
-                rightTable.fireEvent(new CarPartChosenEvent(CarChosenEvent.CAR_CHOSEN_BASE, currentCarPart));
+                rightTable.fireEvent(new CarPartChosenEvent(CarPartChosenEvent.CAR_PART_CHOSEN, currentCarPart));
             }
-            if(MouseButton.SECONDARY.equals(event.getButton())){
+            if(MouseButton.SECONDARY.equals(event.getButton())
+                    && event.isSecondaryButtonDown()){
                 deleteItemContextMenu.show(this.getWindow());
             }
         });
 
-        rightTable.addEventHandler(CarPartChosenEvent.CAR_PART_CHOSEN, new EventHandler<CarPartChosenEvent>() {
-            @Override
-            public void handle(CarPartChosenEvent event) {
-                setImage(event.getCarPart().getImgUri());
-            }
+        rightTable.addEventHandler(CarPartChosenEvent.CAR_PART_CHOSEN, event -> {
+            setImage(event.getCarPart().getImgUri());
         });
     }
 
@@ -197,6 +199,28 @@ public class AdminCatalogSceneCarPart extends CatalogCarPartScene{
 
     private void initButtons(){
         addCarPartButton = new Button();
+        addCarPartButton.setOnAction(event -> {
+            Window owner = ((Node) event.getTarget()).getScene().getWindow();
+
+            Stage addCarPartStage = new Stage();
+            addCarPartStage.initModality(Modality.APPLICATION_MODAL);
+            addCarPartStage.initOwner(owner);
+            addCarPartStage.setTitle(viewDelegate.getMessageForAlert("addingCarPart"));
+            addCarPartStage.setResizable(false);
+            AddCarPartScene addCarPartScene = (AddCarPartScene) viewDelegate.chooseSceneByName(AddCarPartScene.class.getSimpleName());
+            viewDelegate.changeAppSkin(addCarPartScene);
+            addCarPartScene.setAddedCar(getChosenCar());
+            addCarPartStage.setScene(addCarPartScene);
+            addCarPartScene.initContent();
+            addCarPartStage.setOnCloseRequest(event1 -> {
+                if (addCarPartScene.getAddedCarPart() != null) {
+                    addCarPartButton.fireEvent(new CarPartAddedEvent(CarPartAddedEvent.CAR_PART_ADDED_EVENT,
+                            addCarPartScene.getAddedCarPart()));
+                }
+            });
+
+            addCarPartStage.show();
+        });
         deleteSelectedButton = new Button();
         deleteSelectedButton.setOnAction(deleteCarPartHandler);
     }

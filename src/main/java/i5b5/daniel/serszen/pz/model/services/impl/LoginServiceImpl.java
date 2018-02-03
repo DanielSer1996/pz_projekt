@@ -38,11 +38,6 @@ public class LoginServiceImpl implements LoginService {
         return check(password,storedPass);
     }
 
-    @Override
-    public void insertAdmin(String login, String password) throws Exception {
-        String encPassword = getSaltedHash(password);
-        loginMapper.insertAdminUser(login,encPassword);
-    }
 
     private String getSaltedHash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLen);
@@ -56,6 +51,7 @@ public class LoginServiceImpl implements LoginService {
         SecretKey key = f.generateSecret(new PBEKeySpec(
                 password.toCharArray(), salt, iterations, desiredKeyLen)
         );
+
         return Base64.encodeBase64String(key.getEncoded());
     }
 

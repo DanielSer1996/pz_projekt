@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -25,11 +28,30 @@ public class ViewDelegate {
 
     private ViewDelegate(Stage stage) {
         this.stage = stage;
-        skinFile = "css/bright_skin.css";
-        language = "pl";
+        try {
+            Properties prop = getProperties();
+            skinFile = "css/" + prop.getProperty("startingSkin")+"_skin.css";
+            language = prop.getProperty("startingLang");
+        } catch (Throwable e) {
+            logger.error(e);
+            skinFile = "css/bright_skin.css";
+            language = "pl";
+        }
+    }
+
+    private Properties getProperties() throws IOException {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("properties/app.properties"));
+
+        return properties;
     }
 
     public void changeScene(AbstractCustomScene scene, Object param) {
+        if(scene instanceof AbstractCatalogScene){
+            AbstractCatalogScene acs = (AbstractCatalogScene) scene;
+            acs.refreshTimerText();
+        }
+
         if (scene instanceof AdminCatalogSceneCar && param != null) {
             String login = (String) param;
             AdminCatalogSceneCar scene1 = (AdminCatalogSceneCar) scene;
@@ -41,6 +63,7 @@ public class ViewDelegate {
             Car car = (Car) param;
             CatalogCarPartScene scene1 = (CatalogCarPartScene) scene;
             scene1.setChosenCar(car);
+            scene1.initAllCarParts();
             stage.setScene(scene1);
         } else {
             stage.setScene(scene);
@@ -49,7 +72,7 @@ public class ViewDelegate {
         stage.setHeight(scene.getHeightDim());
     }
 
-    public void changeAppSkin(AbstractCatalogScene scene) {
+    public void changeAppSkin(AbstractCustomScene scene) {
         if (!scene.getStylesheets().isEmpty()) {
             scene.getStylesheets().remove(0);
         }
@@ -93,6 +116,7 @@ public class ViewDelegate {
 
     public void changeLanguage() {
         ResourceBundle bundle = ResourceBundle.getBundle("languages/AppMessages", new Locale(language, language.toUpperCase()));
+        getStage().setTitle(bundle.getString("mainTitle"));
         List<Field> f = new ArrayList<>();
         for (Map.Entry<String, AbstractCustomScene> entry : scenes.entrySet()) {
             f.clear();
@@ -101,6 +125,12 @@ public class ViewDelegate {
                 setFieldLang(field, entry.getValue(), bundle);
             }
         }
+    }
+
+    public String getMessageForAlert(String name){
+        ResourceBundle bundle = ResourceBundle.getBundle("languages/AppMessages", new Locale(language, language.toUpperCase()));
+
+        return bundle.getString(name);
     }
 
     public Map<String, AbstractCustomScene> getScenes() {

@@ -14,6 +14,7 @@ public class App  extends Application{
     private static final double SCREEN_WIDTH = Screen.getScreens().get(0).getBounds().getWidth();
     private static final double SCREEN_HEIGHT = Screen.getScreens().get(0).getBounds().getHeight();
     private final Logger log = LogManager.getLogger(App.class);
+    public static boolean isRunning = true;
 
     public static void main(String[] args) {
         launch(args);
@@ -22,8 +23,9 @@ public class App  extends Application{
     @Override
     public void start(Stage primaryStage) {
         ViewDelegate viewDelegate = ViewDelegate.getInstance(primaryStage);
+        primaryStage.setOnCloseRequest(event -> isRunning = false);
 
-        primaryStage.setTitle("Katalog części samochodowych");
+        primaryStage.setTitle(viewDelegate.getMessageForAlert("mainTitle"));
 
         primaryStage.setResizable(true);
         viewDelegate.changeScene(viewDelegate.chooseSceneByName(StartingScene.class.getSimpleName()),null);

@@ -1,28 +1,33 @@
 package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.controller.CarController;
+import i5b5.daniel.serszen.pz.controller.XmlParser;
+import i5b5.daniel.serszen.pz.model.exceptions.InvalidXmlFormatException;
 import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
 import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
+import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
-import javafx.util.StringConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 
 public class AddCarScene extends AbstractCustomScene {
     private final Logger logger = LogManager.getLogger(AddCarScene.class);
@@ -48,6 +53,7 @@ public class AddCarScene extends AbstractCustomScene {
     private DatePicker productionEnd;
     private TextField imgUri;
     private Button chooseImg;
+    private Button loadXml;
 
     private FileChooser fileChooser;
 
@@ -75,9 +81,41 @@ public class AddCarScene extends AbstractCustomScene {
         initLabels();
         initFileChooser();
         initConfirmButton();
+        initLoadXmlButton();
         initRootPane();
 
         this.setRoot(rootPane);
+    }
+
+    private void initLoadXmlButton() {
+        loadXml = new Button();
+
+        loadXml.setOnAction(event -> {
+            FileChooser xml = new FileChooser();
+            xml.getExtensionFilters().add(new FileChooser.ExtensionFilter("*.xml", "*.xml"));
+
+            try {
+                File file = xml.showOpenDialog(this.getWindow());
+                if (file != null) {
+                    Car car = XmlParser.unmarshallCarXml(file);
+                    brand.setText(car.getBrand());
+                    model.setText(car.getModel());
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    productionStart.setValue(LocalDate.parse(car.getProductionStart(),dtf));
+                    productionStart.getEditor().setText(car.getProductionStart());
+                    productionEnd.setValue(LocalDate.parse(car.getProductionEnd(),dtf));
+                    productionEnd.getEditor().setText(car.getProductionEnd());
+                    imgUri.setText(car.getImgUri());
+                }
+            } catch (InvalidXmlFormatException | DateTimeParseException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR,
+                        ViewDelegate.getInstance().getMessageForAlert("badXmlFormat"),
+                        ButtonType.OK);
+                alert.setX(this.getWindow().getX());
+                alert.setY(this.getWindow().getY()+this.getWindow().getY()/2);
+                alert.showAndWait();
+            }
+        });
     }
 
     private void initFileChooser() {
@@ -91,6 +129,11 @@ public class AddCarScene extends AbstractCustomScene {
                 imgUri.setText(file.getAbsolutePath());
             }
         });
+    }
+
+    public void resize(){
+        this.getWindow().setWidth(400);
+        this.getWindow().setHeight(500);
     }
 
     private void initConfirmButton() {
@@ -114,8 +157,9 @@ public class AddCarScene extends AbstractCustomScene {
             });
 
             task.setOnFailed(event1 -> {
+                logger.error(task.getException());
                 Alert alert = new Alert(Alert.AlertType.ERROR,
-                        "Niepoprawne dane",
+                        ViewDelegate.getInstance().getMessageForAlert("incorrectData"),
                         ButtonType.OK);
                 alert.setX(this.getWindow().getX());
                 alert.setY(this.getWindow().getY() + this.getWindow().getHeight() / 3);
@@ -187,7 +231,7 @@ public class AddCarScene extends AbstractCustomScene {
     }
 
     private void setTextField(TextField toChange, String selected) {
-        if ("Dodaj nowy".equals(selected)) {
+        if ("Dodaj nowa".equals(selected) || "Add new".equals(selected)) {
             toChange.clear();
             toChange.setEditable(true);
         } else {
@@ -207,12 +251,12 @@ public class AddCarScene extends AbstractCustomScene {
 
     private void initBrandItems() {
         cars.setItems(carBrands);
-        cars.getItems().add("Dodaj nowy");
+        cars.getItems().add(ViewDelegate.getInstance().getMessageForAlert("addNew"));
     }
 
     private void initModelItem() {
         carModelsChoser.setItems(carModels);
-        carModelsChoser.getItems().add("Dodaj nowy");
+        carModelsChoser.getItems().add(ViewDelegate.getInstance().getMessageForAlert("addNew"));
     }
 
     public Button getChooseImg() {
@@ -260,6 +304,7 @@ public class AddCarScene extends AbstractCustomScene {
         rootPane.add(chosenFile, 2, 8);
         rootPane.add(imgUri, 2, 9);
         rootPane.add(chooseImg, 2, 10);
+        rootPane.add(loadXml,2,11);
         rootPane.add(confirmButton, 2, 12);
     }
 }

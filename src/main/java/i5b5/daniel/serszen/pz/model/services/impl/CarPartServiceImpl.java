@@ -38,5 +38,21 @@ public class CarPartServiceImpl implements CarPartService{
         carPartMapper.deleteCarPartsByCategory(category);
     }
 
+    @Override
+    public void insertCarPart(CarPart carPart, Car car) {
+        carPartMapper.insertCarPart(carPart);
+        carPartMapper.insertCarPartRel(car,carPart);
+    }
+
+    @Override
+    public void insertCategory(String name, String categoryDescriptionText) {
+        carPartMapper.insertCategory(name, categoryDescriptionText);
+    }
+
+    @Override
+    public List<CarPart> getAllCarParts() {
+        return carPartMapper.getAllCarParts();
+    }
+
 
 }

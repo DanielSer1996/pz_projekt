@@ -14,4 +14,12 @@ public interface CarPartMapper {
     void deleteCarPartsByCategoryAndName(@Param("category") String category,@Param("name") String name);
     void deleteCarPartsByCategory(@Param("category") String producer);
     void cascadeDelete(@Param("id")long id);
+
+    void insertCarPart(@Param("carPart") CarPart carPart);
+
+    void insertCarPartRel(@Param("car") Car car, @Param("carPart") CarPart carPart);
+
+    void insertCategory(@Param("name") String name, @Param("categoryDescriptionText") String categoryDescriptionText);
+
+    List<CarPart> getAllCarParts();
 }

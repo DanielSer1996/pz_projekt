@@ -1,21 +1,34 @@
 package i5b5.daniel.serszen.pz.model.mybatis.dto;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CarPart {
     private long id;
+    @XmlElement(name = "Name", required = true)
     private String name;
+    @XmlElement(name = "Producer", required = true)
     private String producer;
+    @XmlElement(name = "ProducerModelCode")
     private String producerModelCode;
+    @XmlElement(name = "Category", required = true)
     private String category;
+    @XmlElement(name = "ImgUri")
     private String imgUri;
 
     public CarPart() {
     }
 
-    public CarPart(String name, String producer, String producerModelCode, String category) {
+    public CarPart(String name, String producer, String producerModelCode, String category, String imgUri) {
         this.name = name;
         this.producer = producer;
         this.producerModelCode = producerModelCode;
         this.category = category;
+        this.imgUri = imgUri;
     }
 
     public long getId() {

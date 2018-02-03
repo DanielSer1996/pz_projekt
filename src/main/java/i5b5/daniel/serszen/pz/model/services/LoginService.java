@@ -6,5 +6,4 @@ import java.security.GeneralSecurityException;
 
 public interface LoginService {
     boolean checkLoginData(String login, String password) throws GeneralSecurityException, LoginException;
-    void insertAdmin(String login, String password) throws Exception;
 }

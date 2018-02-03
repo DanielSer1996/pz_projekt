@@ -10,4 +10,9 @@ public interface CarPartService {
     void deleteCarPartsByCategoryNameAndProducer(long id, String category, String name, String producer);
     void deleteCarPartsByCategoryAndName(long id, String category, String name);
     void deleteCarPartsByCategory(long id, String producer);
+    void insertCarPart(CarPart carPart, Car car);
+
+    void insertCategory(String name, String categoryDescriptionText);
+
+    List<CarPart> getAllCarParts();
 }

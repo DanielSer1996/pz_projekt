@@ -6,6 +6,7 @@ import i5b5.daniel.serszen.pz.model.mybatis.dto.Car;
 import i5b5.daniel.serszen.pz.model.mybatis.dto.CarPart;
 import i5b5.daniel.serszen.pz.view.events.CarPartChosenEvent;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Parent;
@@ -45,26 +46,15 @@ public class CatalogCarPartScene extends AbstractCatalogScene{
     }
 
     private void init(){
-        setTableDetails();
-        setTableContent();
         setTableClickingBehaviour();
         changeBackButtonBehaviour();
-        initAllCars();
+        setTableContent();
     }
 
     private void setTableContent() {
         leftTable.setItems(categories);
         centralTable.setItems(parts);
         rightTable.setItems(producers);
-    }
-
-    private void setTableDetails(){
-        leftTable.setPlaceholder(new Label("Nie dodano części samochodowych do katalogu"));
-        leftTableColumn.setText("Kategoria");
-        centralTable.setPlaceholder(new Label("Wybierz kategorię"));
-        centralTableColumn.setText("Nazwa części");
-        rightTable.setPlaceholder(new Label("Wybierz część"));
-        rightTableColumn.setText("Producent");
     }
 
     private void setTableClickingBehaviour() {
@@ -107,7 +97,7 @@ public class CatalogCarPartScene extends AbstractCatalogScene{
         });
     }
 
-    private void initAllCars() {
+    public void initAllCarParts() {
         Task<List<CarPart>> carPartsTask = new Task<List<CarPart>>() {
             @Override
             protected List<CarPart> call() throws Exception {
@@ -126,12 +116,11 @@ public class CatalogCarPartScene extends AbstractCatalogScene{
 
         carPartsTask.setOnFailed(event -> logger.error("error",carPartsTask.getException()));
 
-        Thread thread = new Thread(carPartsTask);
-        thread.start();
+        new Thread(carPartsTask).start();
     }
 
     private void changeBackButtonBehaviour() {
-        menuBar.getMenus().get(2).getItems().get(1).setOnAction(
+        menuBar.getMenus().get(1).getItems().get(1).setOnAction(
                 event -> {
                     viewDelegate.getScenes().remove(CatalogCarPartScene.class.getSimpleName());
                     viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogCarScene.class.getSimpleName()), null);

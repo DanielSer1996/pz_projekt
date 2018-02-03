@@ -21,6 +21,10 @@ public class CarPartController {
         return carPartService.getAllCarPartsForCar(car);
     }
 
+    public List<CarPart> getAllCarParts(){
+        return carPartService.getAllCarParts();
+    }
+
     public void deleteCarPartsByCategoryNameAndProducer(long id, String category, String name, String producer) {
         carPartService.deleteCarPartsByCategoryNameAndProducer(id,category, name, producer);
     }
@@ -33,4 +37,12 @@ public class CarPartController {
         carPartService.deleteCarPartsByCategory(id, category);
     }
 
+    public void insertCarPart(CarPart carPart, Car car){
+        carPartService.insertCarPart(carPart, car);
+    }
+
+
+    public void insertCategory(String name, String categoryDescriptionText) {
+        carPartService.insertCategory(name, categoryDescriptionText);
+    }
 }

@@ -1,8 +1,14 @@
 package i5b5.daniel.serszen.pz.view.scenes;
 
+import i5b5.daniel.serszen.pz.controller.WebController;
+import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
 import i5b5.daniel.serszen.pz.view.App;
 import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
+import i5b5.daniel.serszen.pz.view.utility.Clock;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -17,6 +23,7 @@ import javafx.scene.text.Text;
 import javafx.stage.WindowEvent;
 
 import java.io.File;
+import java.io.IOException;
 
 public abstract class AbstractCatalogScene extends AbstractCustomScene {
     protected final GridPane rootPane = new GridPane();
@@ -34,11 +41,7 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
     protected TableColumn<String, String> rightTableColumn;
     protected ImageView itemImage;
 
-    protected VBox searchingPanel;
-    protected Label searchText;
-    protected TextField searchField;
-    protected Button searchButton;
-    protected Menu menuFile;
+    protected VBox rightPanel;
     protected Menu menuEdit;
     protected Menu changeSkinMenu;
     protected MenuItem darkSkin;
@@ -52,6 +55,7 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
     protected MenuItem exit;
     protected MenuItem back;
 
+    protected Clock time;
 
     protected GridPane contentPane;
 
@@ -73,7 +77,7 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
         configSearchingPanel();
         initTables();
         initContentPane();
-        initSearchingPane();
+        initRightPane();
         initTitleText();
         addContent();
         addBackButton();
@@ -97,6 +101,7 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
     private void addContent() {
         rootPane.add(titlePane, 0, 5);
         rootPane.add(contentPane, 0, 9);
+        rootPane.add(time,1,11);
     }
 
     protected void initRootPane() {
@@ -104,11 +109,11 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
         rootPane.setVgap(5);
         rootPane.setHgap(5);
         rootPane.setAlignment(Pos.CENTER);
+        initTime();
     }
 
     private void initMenuBar() {
         menuBar = new MenuBar();
-        menuFile = new Menu();
         menuEdit = new Menu();
 
         changeSkinMenu = new Menu();
@@ -149,7 +154,7 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
 
         menuEdit.getItems().addAll(changeSkinMenu, changeLanguageMenu);
 
-        menuBar.getMenus().addAll(menuFile, menuEdit);
+        menuBar.getMenus().addAll(menuEdit);
     }
 
     private void changeSkin() {
@@ -165,26 +170,22 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
     }
 
     private void configSearchingPanel() {
-        searchingPanel = new VBox();
-        searchingPanel.setPadding(new Insets(10, 10, 10, 10));
-        searchingPanel.setSpacing(20);
-        searchingPanel.setAlignment(Pos.CENTER_LEFT);
+        rightPanel = new VBox();
+        rightPanel.setPadding(new Insets(10, 10, 10, 10));
+        rightPanel.setSpacing(20);
+        rightPanel.setAlignment(Pos.CENTER_LEFT);
     }
 
-    private void initSearchingPane() {
-        searchText = new Label();
-        searchField = new TextField();
-        searchButton = new Button();
+    private void initRightPane() {
         initImageView();
-
-        searchingPanel.getChildren().addAll(searchText, searchField, searchButton, itemImage);
+        rightPanel.getChildren().addAll(itemImage);
     }
 
     private void initContentPane() {
         contentPane.add(leftTable, 0, 0);
         contentPane.add(centralTable, 1, 0);
         contentPane.add(rightTable, 2, 0);
-        contentPane.add(searchingPanel, 3, 0);
+        contentPane.add(rightPanel, 3, 0);
     }
 
     private void initTables() {
@@ -229,6 +230,11 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
 
     }
 
+    public void refreshTimerText(){
+        rootPane.getChildren().remove(time);
+        rootPane.add(time,1,11);
+    }
+
     protected void addBackButton() {
         exitMenu = new Menu();
         exit = new MenuItem();
@@ -258,6 +264,10 @@ public abstract class AbstractCatalogScene extends AbstractCustomScene {
         } else {
             itemImage.setImage(loadNoPhotoImage());
         }
+    }
+
+    private void initTime(){
+        time = Clock.getInstance();
     }
 
     private Image loadNoPhotoImage() {

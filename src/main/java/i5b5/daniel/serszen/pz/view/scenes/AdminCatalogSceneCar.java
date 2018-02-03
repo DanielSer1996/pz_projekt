@@ -69,7 +69,7 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
     }
 
     private void changeLabel() {
-        menuBar.getMenus().get(2).getItems().get(1).setOnAction(
+        menuBar.getMenus().get(1).getItems().get(1).setOnAction(
                 event -> {
                     viewDelegate.getScenes().remove(AdminCatalogSceneCar.class.getSimpleName());
                     viewDelegate.getScenes().remove(AdminCatalogSceneCarPart.class.getSimpleName());
@@ -115,7 +115,7 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
             cars.clear();
             setImage(null);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "Pomyślnie usunięto samochód!",
+                    viewDelegate.getMessageForAlert("carDeletedSuccess"),
                     ButtonType.OK);
             alert.setX(getWindow().getX() + getWindow().getWidth() / 3);
             alert.setY(getWindow().getY() + getWindow().getHeight() / 3);
@@ -129,14 +129,15 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
         });
 
         task.setOnFailed(event -> {
-            logger.error("eror in thread" + task.getTitle(), task.getException());
+            logger.error(task.getException());
         });
 
         new Thread(task).start();
     }
 
     private void alterSearchingPane() {
-        searchingPanel.addEventHandler(CarAddedEvent.CAR_ADDED_EVENT_TYPE, event -> {
+        rightPanel.addEventHandler(CarAddedEvent.CAR_ADDED_EVENT_TYPE, event -> {
+            viewDelegate.getScenes().remove(AddCarScene.class.getSimpleName());
             models.clear();
             modelVersions.clear();
             cars.add(event.getCar());
@@ -145,7 +146,7 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
 
         initAddCarButton();
 
-        searchingPanel.getChildren().add(addNewCarButton);
+        rightPanel.getChildren().add(addNewCarButton);
     }
 
     private void alterTableClickingBehaviour() {
@@ -163,7 +164,8 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
                 currentCar.setBrand(chosenBrand);
                 setCarModelTable();
             }
-            if(MouseButton.SECONDARY.equals(event.getButton())){
+            if(MouseButton.SECONDARY.equals(event.getButton())
+                    && event.isSecondaryButtonDown()){
                 deleteItemContextMenu.show(this.getWindow());
             }
         });
@@ -183,7 +185,8 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
                 setCarModelVersionTable();
 
             }
-            if(MouseButton.SECONDARY.equals(event.getButton())){
+            if(MouseButton.SECONDARY.equals(event.getButton())
+                    && event.isSecondaryButtonDown()){
                 deleteItemContextMenu.show(this.getWindow());
             }
         });
@@ -200,7 +203,8 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
                 deleteCarHandler.getCar().setId(currentCar.getId());
                 rightTable.fireEvent(new CarChosenEvent(CarChosenEvent.CAR_CHOSEN_BASE, currentCar));
             }
-            if(MouseButton.SECONDARY.equals(event.getButton())){
+            if(MouseButton.SECONDARY.equals(event.getButton())
+                    && event.isSecondaryButtonDown()){
                 deleteItemContextMenu.show(this.getWindow());
             }
             if(event.getClickCount() == 2 && currentCar.getProductionStart() != null){
@@ -217,17 +221,19 @@ public class AdminCatalogSceneCar extends CatalogCarScene {
     }
 
     private void initAddCarButton() {
-        addNewCarButton = new Button("Dodaj model samochodu");
+        addNewCarButton = new Button("");
         addNewCarButton.setOnAction(event -> {
             Window owner = ((Node) event.getTarget()).getScene().getWindow();
 
             Stage addCarStage = new Stage();
             addCarStage.initModality(Modality.APPLICATION_MODAL);
             addCarStage.initOwner(owner);
-            addCarStage.setTitle("Dodawanie samochodu");
+            addCarStage.setTitle(viewDelegate.getMessageForAlert("addingCar"));
             addCarStage.setResizable(false);
             AddCarScene addCarScene = (AddCarScene) viewDelegate.chooseSceneByName(AddCarScene.class.getSimpleName());
+            viewDelegate.changeAppSkin(addCarScene);
             addCarStage.setScene(addCarScene);
+            addCarScene.resize();
             addCarStage.setOnCloseRequest(event1 -> {
                 if (addCarScene.getAddedCar() != null) {
                     addNewCarButton.fireEvent(new CarAddedEvent(CarAddedEvent.CAR_ADDED_EVENT_TYPE,

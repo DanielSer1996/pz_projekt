@@ -1,6 +1,7 @@
 package i5b5.daniel.serszen.pz.view.scenes;
 
 import i5b5.daniel.serszen.pz.controller.UtilController;
+import i5b5.daniel.serszen.pz.model.exceptions.LoginException;
 import i5b5.daniel.serszen.pz.model.factories.BeanFactory;
 import i5b5.daniel.serszen.pz.view.delegates.ViewDelegate;
 import i5b5.daniel.serszen.pz.view.events.LoginSuccessfulEvent;
@@ -19,6 +20,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.rmi.runtime.Log;
 
 import java.util.concurrent.ExecutionException;
 
@@ -80,10 +82,10 @@ public class AdminLoginScene extends AbstractCustomScene {
         clearButton.setOnAction(event -> {
             loginTextField.clear();
             passwordField.clear();
-            });
+        });
 
         backButton.setOnAction(event -> {
-            viewDelegate.changeScene(viewDelegate.chooseSceneByName(StartingScene.class.getSimpleName()),null);
+            viewDelegate.changeScene(viewDelegate.chooseSceneByName(StartingScene.class.getSimpleName()), null);
         });
     }
 
@@ -128,7 +130,7 @@ public class AdminLoginScene extends AbstractCustomScene {
         });
     }
 
-    private void configRootPane(){
+    private void configRootPane() {
         gridPane = new GridPane();
 
         gridPane.setPadding(new Insets(10, 10, 10, 10));
@@ -164,7 +166,7 @@ public class AdminLoginScene extends AbstractCustomScene {
 
     }
 
-    private void loginButtonFire(String login, String password, Button source)  {
+    private void loginButtonFire(String login, String password, Button source) {
         Task<Boolean> check = new Task<Boolean>() {
             @Override
             protected Boolean call() throws Exception {
@@ -176,16 +178,12 @@ public class AdminLoginScene extends AbstractCustomScene {
             try {
                 loginTaskSucceed(check.get(), source, login);
             } catch (InterruptedException | ExecutionException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR,
-                        "Błąd krytyczny, program zostanie zamknięty",
-                        ButtonType.OK);
-                alert.showAndWait();
-                System.exit(-1);
+                logger.error(e);
             }
         });
 
         check.setOnFailed(event -> {
-            loginTaskFailed(check.getException().getMessage());
+            loginTaskFailed(check.getException());
         });
 
         Thread thread = new Thread(check);
@@ -195,9 +193,9 @@ public class AdminLoginScene extends AbstractCustomScene {
 
     private void loginTaskSucceed(boolean credentialsCheck, Button source, String login) {
         if (!credentialsCheck) {
-            logger.info("Login attempt failed for admin "+login+": wrong password");
+            logger.info("Login attempt failed for admin " + login + ": wrong password");
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Nieprawidłowe hasło",
+                    viewDelegate.getMessageForAlert("incorrectPassword"),
                     ButtonType.OK);
             alert.setHeight(191.0);
             alert.setWidth(360.0);
@@ -205,14 +203,14 @@ public class AdminLoginScene extends AbstractCustomScene {
             alert.setY(viewDelegate.getStage().getY() + viewDelegate.getStage().getHeight() / 2 - alert.getHeight());
             alert.showAndWait();
         } else {
-            source.fireEvent(new LoginSuccessfulEvent(LoginSuccessfulEvent.LOGIN_SUCCESSFUL_BASE,login));
+            source.fireEvent(new LoginSuccessfulEvent(LoginSuccessfulEvent.LOGIN_SUCCESSFUL_BASE, login));
         }
 
     }
 
-    private void loginTaskFailed(String message) {
+    private void loginTaskFailed(Throwable e) {
         Alert alert = new Alert(Alert.AlertType.ERROR,
-                message,
+                chooseLoginFailedMessage(e),
                 ButtonType.OK);
 
         alert.setHeight(191.0);
@@ -220,6 +218,23 @@ public class AdminLoginScene extends AbstractCustomScene {
         alert.setX(viewDelegate.getStage().getX() + viewDelegate.getStage().getWidth() / 2 - alert.getWidth());
         alert.setY(viewDelegate.getStage().getY() + viewDelegate.getStage().getHeight() / 2 - alert.getHeight());
         alert.showAndWait();
+    }
+
+    private String chooseLoginFailedMessage(Throwable e) {
+        if(!(e instanceof LoginException)){
+            return "";
+        }
+        LoginException ex = (LoginException) e;
+        switch (ex.getCode()) {
+            case USER_NOT_FOUND:
+                return viewDelegate.getMessageForAlert("userNotFound");
+            case PASSWORD_STORING:
+                return viewDelegate.getMessageForAlert("passwordStoring");
+            case CHECKING_PASSWORD:
+                return viewDelegate.getMessageForAlert("passwordChecking");
+            default:
+                    return "";
+        }
     }
 
     public UtilController getUtilController() {

@@ -1,11 +1,23 @@
 package i5b5.daniel.serszen.pz.model.mybatis.dto;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "Car")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Car {
     private long id;
+    @XmlElement(name = "Brand", required = true)
     private String brand;
+    @XmlElement(name = "Model", required = true)
     private String model;
+    @XmlElement(name = "ProductionStart", required = true)
     private String productionStart;
+    @XmlElement(name = "ProductionEnd", required = true)
     private String productionEnd;
+    @XmlElement(name = "ImgUri")
     private String imgUri;
 
     public Car() {

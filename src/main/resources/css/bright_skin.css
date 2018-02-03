@@ -3,14 +3,14 @@
 .root{
     -fx-font-family: "Calibri";
     -fx-base: #99ff99;
-    -fx-background-color: #4dff4d ;
+    -fx-background-color: #00FFFF ;
 
 }
 
 .menu-bar{
 
-    -fx-background-color: #ffff00;
-    -fx-border-color: #cc3300;
+    -fx-background-color: #F5F5DC;
+    -fx-border-color: black;
 
 }
 

@@ -12,6 +12,36 @@
         <result property="producerModelCode" column="CAR_PART_PRODUCER_MODEL_CODE"/>
         <result property="imgUri" column="CAR_PART_IMG_URI"/>
     </resultMap>
+    <insert id="insertCarPart">
+        INSERT INTO CAR_PART
+        VALUES (CAR_PART_SEQ.nextval,
+                #{carPart.name},
+                #{carPart.producer},
+                #{carPart.producerModelCode},
+                (SELECT CATEGORY_ID
+                 FROM CAR_PARTS_CATEGORY_DICT
+                 WHERE CATEGORY_NAME = #{carPart.category}),
+                #{carPart.imgUri})
+    </insert>
+
+    <insert id="insertCarPartRel">
+        INSERT INTO CAR_PART_REL
+        VALUES (#{car.id},
+                (SELECT CAR_PART_ID
+                 FROM CAR_PART
+                 WHERE CAR_PART_NAME = #{carPart.name}
+                       AND CAR_PART_PRODUCER = #{carPart.producer}
+                       AND CAR_PART_PRODUCER_MODEL_CODE = #{carPart.producerModelCode}))
+    </insert>
+    <insert id="insertCategory">
+        INSERT INTO CAR_PARTS_CATEGORY_DICT
+        VALUES (
+            CAR_PART_DICT_SEQ.nextval,
+            #{name},
+            #{categoryDescriptionText}
+        )
+    </insert>
+
     <delete id="cascadeDelete">
         DELETE FROM CAR_PART_REL
         WHERE CAR_PART_ID = #{id}
@@ -51,5 +81,16 @@
             INNER JOIN CAR_PARTS_CATEGORY_DICT DICT ON CP.CATEGORY_ID = DICT.CATEGORY_ID
             INNER JOIN CAR_PART_REL CPR ON CP.CAR_PART_ID = CPR.CAR_PART_ID
         WHERE CPR.CAR_ID = #{car.id}
+    </select>
+    <select id="getAllCarParts" resultMap="carPartMap">
+        SELECT
+            CP.CAR_PART_ID,
+            CP.CAR_PART_NAME,
+            CP.CAR_PART_PRODUCER,
+            CP.CAR_PART_PRODUCER_MODEL_CODE,
+            DICT.CATEGORY_NAME CN,
+            CP.CAR_PART_IMG_URI
+        FROM CAR_PART CP
+            INNER JOIN CAR_PARTS_CATEGORY_DICT DICT ON CP.CATEGORY_ID = DICT.CATEGORY_ID
     </select>
 </mapper>

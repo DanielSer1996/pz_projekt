@@ -96,7 +96,9 @@ public class CatalogCarScene extends AbstractCatalogScene {
                 currentCar.setProductionEnd(chosenModelVersion.substring(13));
                 getUriAndIdForCurrentCar();
                 rightTable.fireEvent(new CarChosenEvent(CarChosenEvent.CAR_CHOSEN_BASE, currentCar));
-                viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogCarPartScene.class.getSimpleName()),currentCar);
+                if(event.getClickCount() == 2) {
+                    viewDelegate.changeScene(viewDelegate.chooseSceneByName(CatalogCarPartScene.class.getSimpleName()),currentCar);
+                }
             }
         });
 
@@ -108,7 +110,7 @@ public class CatalogCarScene extends AbstractCatalogScene {
         });
     }
 
-    private void initAllCars() {
+    public void initAllCars() {
         Task<ObservableList<Car>> carsTask = new Task<ObservableList<Car>>() {
             @Override
             protected ObservableList<Car> call() throws Exception {
@@ -141,7 +143,7 @@ public class CatalogCarScene extends AbstractCatalogScene {
     }
 
     protected void alterBackButton() {
-        menuBar.getMenus().get(2).getItems().get(1).setOnAction(
+        menuBar.getMenus().get(1).getItems().get(1).setOnAction(
                 event -> {
                     viewDelegate.getScenes().remove(CatalogCarScene.class.getSimpleName());
                     viewDelegate.getScenes().remove(CatalogCarPartScene.class.getSimpleName());
